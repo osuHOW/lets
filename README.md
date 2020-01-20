@@ -1,4 +1,5 @@
 ## LETS
+This is what rosu! uses for the replay + score server
 
 - Origin: https://zxq.co/ripple/lets
 - Mirror: https://github.com/osuripple/lets
