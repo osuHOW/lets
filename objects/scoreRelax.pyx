@@ -224,7 +224,6 @@ class score:
 			self.playDateTime = int(time.time())
 			self.calculateAccuracy()
 			#osuVersion = scoreData[17]
-			self.calculatePP()
 			self.quit = quit_
 			self.failed = failed
 
@@ -252,7 +251,7 @@ class score:
 			self.date
 		)
 
-	def setCompletedStatus(self, b = None):
+	def setCompletedStatus(self):
 		"""
 		Set this score completed status and rankedScoreIncrease
 		"""
@@ -260,19 +259,20 @@ class score:
 			self.completed = 0
 			
 			# Create beatmap object
-			if b is None:
-				b = beatmap.beatmap(self.fileMd5, 0)
-				
+			b = beatmap.beatmap(self.fileMd5, 0)
+			
+			"""
 			if not scoreUtils.isRankable(self.mods):
 				return
-			
-			if self.passed:
+			"""
+
+			if self.passed and scoreUtils.isRankable(self.mods):
 				# Get userID
 				userID = userUtils.getID(self.playerName)
 
 				# Make sure we don't have another score identical to this one
 				# TODO: time check
-				duplicate = glob.db.fetch("SELECT id FROM scores WHERE userid = %s AND beatmap_md5 = %s AND play_mode = %s AND score = %s LIMIT 1", [userID, self.fileMd5, self.gameMode, self.score])
+				duplicate = glob.db.fetch("SELECT id FROM scores_relax WHERE userid = %s AND beatmap_md5 = %s AND play_mode = %s AND score = %s LIMIT 1", [userID, self.fileMd5, self.gameMode, self.score])
 				if duplicate is not None:
 					# Found same score in db. Don't save this score.
 					self.completed = -1
@@ -280,7 +280,10 @@ class score:
 
 				# No duplicates found.
 				# Get right "completed" value
-				personalBest = glob.db.fetch("SELECT id,{}score FROM scores WHERE userid = %s AND beatmap_md5 = %s AND play_mode = %s AND completed = 3 LIMIT 1".format(
+				if b.rankedStatus == rankedStatuses.LOVED and glob.conf.extra["lets"]["submit"]["loved-dont-give-pp"]:
+					personalBest = glob.db.fetch("SELECT id, score FROM scores_relax WHERE userid = %s AND beatmap_md5 = %s AND play_mode = %s AND completed = 3 LIMIT 1", [userID, self.fileMd5, self.gameMode])
+				else:
+					personalBest = glob.db.fetch("SELECT id,{}score FROM scores_relax WHERE userid = %s AND beatmap_md5 = %s AND play_mode = %s AND completed = 3 LIMIT 1".format(
 						glob.conf.extra["lets"]["submit"]["score-overwrite"] == "score" and " " or " {}, ".format(glob.conf.extra["lets"]["submit"]["score-overwrite"])
 					),
 					[userID, self.fileMd5, self.gameMode])
@@ -291,11 +294,12 @@ class score:
 					self.oldPersonalBest = 0
 					self.personalOldBestScore = None
 				else:
-					# Set old personal best and calculates PP
+					# Set old personal best
 					self.personalOldBestScore = personalBest["id"]
-					self.calculatePP()
 					# Compare personal best's score with current score
 					if b.rankedStatus in [rankedStatuses.RANKED, rankedStatuses.APPROVED, rankedStatuses.QUALIFIED]:
+						# Calculates PP
+						self.calculatePP()
 						if getattr(self, glob.conf.extra["lets"]["submit"]["score-overwrite"]) > personalBest[glob.conf.extra["lets"]["submit"]["score-overwrite"]]:
 							# New best score
 							self.completed = 3
@@ -305,7 +309,7 @@ class score:
 							self.completed = 2
 							self.rankedScoreIncrease = 0
 							self.oldPersonalBest = 0
-					elif glob.conf.extra["lets"]["submit"]["loved-dont-give-pp"] and b.rankedStatus == rankedStatuses.LOVED:
+					elif b.rankedStatus == rankedStatuses.LOVED and glob.conf.extra["lets"]["submit"]["loved-dont-give-pp"]:
 						if self.score > personalBest["score"]:
 							# New best score
 							self.completed = 3
@@ -315,7 +319,9 @@ class score:
 							self.completed = 2
 							self.rankedScoreIncrease = 0
 							self.oldPersonalBest = 0
-					elif not glob.conf.extra["lets"]["submit"]["loved-dont-give-pp"] and b.rankedStatus == rankedStatuses.LOVED:
+					elif b.rankedStatus == rankedStatuses.LOVED and not glob.conf.extra["lets"]["submit"]["loved-dont-give-pp"]:
+						# Calculates PP
+						self.calculatePP()
 						if getattr(self, glob.conf.extra["lets"]["submit"]["score-overwrite"]) > personalBest[glob.conf.extra["lets"]["submit"]["score-overwrite"]]:
 							# New best score
 							self.completed = 3
@@ -359,11 +365,16 @@ class score:
 			b = beatmap.beatmap(self.fileMd5, 0)
 
 		# Calculate pp
-		if b.rankedStatus >= rankedStatuses.RANKED and b.rankedStatus != rankedStatuses.UNKNOWN \
+		if b.rankedStatus in [rankedStatuses.RANKED, rankedStatuses.APPROVED, rankedStatuses.QUALIFIED] and b.rankedStatus != rankedStatuses.UNKNOWN \
 		and scoreUtils.isRankable(self.mods) and self.passed and self.gameMode in score.PP_CALCULATORS:
 			calculator = score.PP_CALCULATORS[self.gameMode](b, self)
 			self.pp = calculator.pp
-		elif glob.conf.extra["lets"]["submit"]["loved-dont-give-pp"] and b.rankedStatus == rankedStatuses.LOVED:
+		elif glob.conf.extra["lets"]["submit"]["loved-dont-give-pp"] and b.rankedStatus == rankedStatuses.LOVED \
+		and scoreUtils.isRankable(self.mods) and self.passed and self.gameMode in score.PP_CALCULATORS:
 			self.pp = 0
+		elif not glob.conf.extra["lets"]["submit"]["loved-dont-give-pp"] and b.rankedStatus == rankedStatuses.LOVED \
+		and scoreUtils.isRankable(self.mods) and self.passed and self.gameMode in score.PP_CALCULATORS:
+			calculator = score.PP_CALCULATORS[self.gameMode](b, self)
+			self.pp = calculator.pp
 		else:
 			self.pp = 0
