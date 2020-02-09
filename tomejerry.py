@@ -560,6 +560,12 @@ def main():
     logging.info("Reading config file")
     glob.conf = config.config("config.ini")
 
+    # Read additional config file
+    logging.info("Reading additional config file")
+    with open(glob.conf.config["custom"]["config"], "r") as f:
+        logging.info("Add-on conf = {}".format(glob.conf.config["custom"]["config"]))
+        glob.conf.extra = json.load(f)
+
     # Get workers from arguments if set
     workers_number = MAX_WORKERS // 2
     if args.workers is not None:
