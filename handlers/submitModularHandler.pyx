@@ -95,7 +95,7 @@ class handler(requestsManager.asyncRequestHandler):
 
 			# Get right AES Key
 			if "osuver" in self.request.arguments:
-				aeskey = f"osu!-scoreburgr---------{self.get_argument("osuver")}")
+				aeskey = f"osu!-scoreburgr---------{self.get_argument('osuver')}")
 			else:
 				aeskey = "h89f2-890h2h89b34g-h80g134n90133"
 
@@ -310,7 +310,7 @@ class handler(requestsManager.asyncRequestHandler):
 				requests.get(f"{glob.conf.config['server']['banchourl']}/api/v1/fokabotMessage?{params}")
 				return
 
-			# Ci metto la faccia, ci metto la testa e ci metto il mio cuore
+			# google translate : I put my face on it, I put my head on it and I put my heart on it
 			if ((s.mods & mods.DOUBLETIME) > 0 and (s.mods & mods.HALFTIME) > 0) \
 			or ((s.mods & mods.HARDROCK) > 0 and (s.mods & mods.EASY) > 0)\
 			or ((s.mods & mods.RELAX) > 0 and (s.mods & mods.RELAX2) > 0) \
@@ -343,16 +343,44 @@ class handler(requestsManager.asyncRequestHandler):
 					if UsingRelax:
 						with open(f"{glob.conf.config['server']['replayspath']}_relax/replay_{s.scoreID}.osr", "wb") as f:
 							f.write(replay)
+						with open(f"{glob.conf.config['server']['replayspath']}_relax_full/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as rdf:
+							rdf.write(RPBUILD(s.scoreID, rawReplay=self.request.files["score"][0]["body"]))
 					else:
 						with open(f"{glob.conf.config['server']['replayspath']}/replay_{s.scoreID}.osr", "wb") as f:
 							f.write(replay)
+						with open(f"{glob.conf.config['server']['replayspath']}_full/replay_{s.scoreID}.osr"), "wb") as rdf:
+							rdf.write(RPBUILD(s.scoreID, rawReplay=self.request.files["score"][0]["body"]))
+
+					#circleguard replay parser
+					cg = circleguard.Circleguard(glob.conf.config["osuapi"]["apikey"])
+					m = loadable.Map(beatmapInfo.beatmapID, num=1)
+					d = enums.StealDetect(20) + enums.RelaxDetect(50)
+					cg.load(m)
+
+					if UsingRelax:
+						daReplay = loadable.ReplayPath("{}_relax_full/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)))
+					else:
+						daReplay = loadable.ReplayPath("{}_full/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)))
+					log.info(f"[Loaded Replay] ID {s.scoreID} for {daReplay}")
+					c = loadable.Check(daReplay, d)
+					# threading.Thread(target=lambda: cg.run(c)).start()
+					for r in cg.run(c): # r is a StealResult
+						log.info(cg.run(c))
+						if r.ischeat:
+							webhook = Webhook(glob.conf.config["discord"]["ahook"],
+								color=0xadd836,
+								footer="I spot a cheater... [ Replay AC ]")
+							webhook.set_title(title=f"Caught a cheater {username} ({userID})")
+							webhook.set_desc(f"{r.later_replay.username}'s replay on map {r.later_replay.map_id} +{r.later_replay.mods}")
+							webhook.set_desc(f"is stolen from {r.earlier_replay.username} with similarity {r.similarity}")
+							webhook.post()
 
 					if glob.conf.config["cono"]["enable"]:
 						if UsingRelax:
 							RPBUILD = replayHelperRelax.buildFullReplay
 						else:
 							RPBUILD = replayHelper.buildFullReplay
-						# We run this in a separate thread to avoid slowing down scores submission,
+						# We run this in a separate thread to avoid slowing down score submission,
 						# as cono needs a full replay
 						threading.Thread(target=lambda: glob.redis.publish(
 							"cono:analyze", json.dumps({
