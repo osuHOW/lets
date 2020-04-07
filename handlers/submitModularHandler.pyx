@@ -36,6 +36,8 @@ from objects import scoreboardRelax
 from objects.charts import BeatmapChart, OverallChart
 from secret import butterCake
 from secret.discord_hooks import Webhook
+from secret.circleparse.circleparse import replay as circleparse
+from secret.circlecore.circleguard import cacher, circleguard, comparer, enums, exceptions, investigator, loadable, loader, replay_info, result, utils
 
 MODULE_NAME = "submit_modular"
 class handler(requestsManager.asyncRequestHandler):
@@ -93,7 +95,7 @@ class handler(requestsManager.asyncRequestHandler):
 
 			# Get right AES Key
 			if "osuver" in self.request.arguments:
-				aeskey = "osu!-scoreburgr---------{}".format(self.get_argument("osuver"))
+				aeskey = f"osu!-scoreburgr---------{self.get_argument("osuver")}")
 			else:
 				aeskey = "h89f2-890h2h89b34g-h80g134n90133"
 
@@ -111,14 +113,14 @@ class handler(requestsManager.asyncRequestHandler):
 				raise exceptions.loginFailedException(MODULE_NAME, userID)
 				
 			 # Score submission lock check
-			lock_key = "lets:score_submission_lock:{}:{}:{}".format(userID, scoreData[0], int(scoreData[9]))
+			lock_key = f"lets:score_submission_lock:{userID}:{scoreData[0]}:{int(scoreData[9])}")
 			if glob.redis.get(lock_key) is not None:
 				# The same score score is being submitted and it's taking a lot
-				log.warning("Score submission blocked because there's a submission lock in place ({})".format(lock_key))
+				log.warning(f"Score submission blocked because there's a submission lock in place ({lock_key})")
 				return
  
 			# Set score submission lock
-			log.debug("Setting score submission lock {}".format(lock_key))
+			log.debug(f"Setting score submission lock {lock_key}")
 			glob.redis.set(lock_key, "1", 120)
  
 				
@@ -148,9 +150,9 @@ class handler(requestsManager.asyncRequestHandler):
 
 			# Create score object and set its data
 			if UsingRelax:
-				log.info("[RELAX] {} has submitted a score on {}...".format(username, scoreData[0]))
+				log.info(f"[RELAX] {username} has submitted a score on {scoreData[0]}...")
 			else:
-				log.info("[VANILLA] {} has submitted a score on {}...".format(username, scoreData[0]))
+				log.info(f"[VANILLA] {username} has submitted a score on {scoreData[0]}...")
 			
 			if UsingRelax:
 				s = scoreRelax.score()
@@ -217,16 +219,16 @@ class handler(requestsManager.asyncRequestHandler):
 				relax = 1 if used_mods & 128 else 0
 				
 				unrestricted_user = userUtils.noPPLimit(userID, relax)
-				
+				#note to self: take a look at this later on
 				if UsingRelax: 
 					if (s.pp >= rx_pp and s.gameMode == gameModes.STD) and not unrestricted_user and not glob.conf.extra["mode"]["no-pp-cap"]:
 						userUtils.restrict(userID)
-						userUtils.appendNotes(userID, "Restricted due to too high pp gain ({}pp)".format(s.pp))
-						log.warning("**{}** ({}) has been restricted due to too high pp gain **({}pp)**".format(username, userID, s.pp), "cm")
+						userUtils.appendNotes(userID, f"Restricted due to too high pp gain ({s.pp}pp)")
+						log.warning(f"**{username}** ({userID}) has been restricted due to too high pp gain **({s.pp}pp)**", "cm")
 				else:
 					if (s.pp >= oof_pp and s.gameMode == gameModes.STD) and not unrestricted_user and not glob.conf.extra["mode"]["no-pp-cap"]:
 						userUtils.restrict(userID)
-						userUtils.appendNotes(userID, "Restricted due to too high pp gain ({}pp)".format(s.pp))
+						userUtils.appendNotes(userID, f"Restricted due to too high pp gain ({s.pp}pp)")
 						log.warning("**{}** ({}) has been restricted due to too high pp gain **({}pp)**".format(username, userID, s.pp), "cm")
 
 			# Check notepad hack
@@ -238,7 +240,7 @@ class handler(requestsManager.asyncRequestHandler):
 				# bmk and bml passed and they are different, restrict the user
 				userUtils.restrict(userID)
 				userUtils.appendNotes(userID, "Restricted due to notepad hack")
-				log.warning("**{}** ({}) has been restricted due to notepad hack".format(username, userID), "cm")
+				log.warning(f"**{username}** ({userID}) has been restricted due to notepad hack", "cm")
 				return
 			
 			# Right before submitting the score, get the personal best score object (we need it for charts)
@@ -259,7 +261,7 @@ class handler(requestsManager.asyncRequestHandler):
 				
 			# Remove lock as we have the score in the database at this point
 			# and we can perform duplicates check through MySQL
-			log.debug("Resetting score lock key {}".format(lock_key))
+			log.debug(f"Resetting score lock key {lock_key}")
 			glob.redis.delete(lock_key)
 			
 			# Client anti-cheat flags
@@ -272,9 +274,9 @@ class handler(requestsManager.asyncRequestHandler):
 						if glob.conf.config["discord"]["enable"]:
 							webhook = Webhook(glob.conf.config["discord"]["ahook"],
 											  color=0xadd836,
-											  footer="Man... this is worst player. [ Client AC ]")
-							webhook.set_title(title=f"Catched some cheater {username} ({userID})")
-							webhook.set_desc(f'This body catched with flag {haxFlags}\nIn enuming: {hack}')
+											  footer="Caught with Client Anticheat")
+							webhook.set_title(title=f"Caught a cheater {username} ({userID})")
+							webhook.set_desc(f'This body caught with flag {haxFlags}\nIn enuming: {hack}')
 							webhook.post()
 
 			'''
@@ -289,14 +291,13 @@ class handler(requestsManager.asyncRequestHandler):
 				log.warning("**{}** ({}) has been restricted due clientside anti cheat flag **({})**".format(username, userID, haxFlags), "cm")
 			'''
 
-			# สวัสดีฮะ ผมเต้เอ็กเซนไฟไหม้
 			if s.score < 0 or s.score > (2 ** 63) - 1 and glob.conf.extra["mode"]["anticheat"]:
 				userUtils.ban(userID)
 				userUtils.appendNotes(userID, "Banned due to negative score (score submitter)")
 			elif s.score < 0 or s.score > (2 ** 63) - 1 and not glob.conf.extra["mode"]["anticheat"]:
 				alert = "{}, seems like you've exceed the score limit (INT32) or your score is negative, this score won't submit for you.".format(username.encode().decode("ASCII", "ignore"))
 				params = urlencode({"k": glob.conf.config["server"]["apikey"], "to": username.encode().decode("ASCII", "ignore"), "msg": alert})
-				requests.get("{}/api/v1/fokabotMessage?{}".format(glob.conf.config["server"]["banchourl"], params))
+				requests.get(f"{glob.conf.config['server']['banchourl']}/api/v1/fokabotMessage?{params}")
 				return
 
 			# Make sure the score is not memed
@@ -306,7 +307,7 @@ class handler(requestsManager.asyncRequestHandler):
 			elif s.gameMode == gameModes.MANIA and s.score > 1000000 and not glob.conf.extra["mode"]["anticheat"]:
 				alert = "{}, seems like you've exceed osu!Mania score limit (1000000), this score won't submit for you.".format(username.encode().decode("ASCII", "ignore"))
 				params = urlencode({"k": glob.conf.config["server"]["apikey"], "to": username.encode().decode("ASCII", "ignore"), "msg": alert})
-				requests.get("{}/api/v1/fokabotMessage?{}".format(glob.conf.config["server"]["banchourl"], params))
+				requests.get(f"{glob.conf.config['server']['banchourl']}/api/v1/fokabotMessage?{params}")
 				return
 
 			# Ci metto la faccia, ci metto la testa e ci metto il mio cuore
@@ -316,15 +317,15 @@ class handler(requestsManager.asyncRequestHandler):
 			or ((s.mods & mods.SUDDENDEATH) > 0 and (s.mods & mods.NOFAIL) > 0) \
 			and glob.conf.extra["mode"]["anticheat"]:
 				userUtils.ban(userID)
-				userUtils.appendNotes(userID, "Impossible mod combination {} (score submitter)".format(s.mods))
+				userUtils.appendNotes(userID, f"Impossible mod combination {s.mods} (score submitter)")
 			elif ((s.mods & mods.DOUBLETIME) > 0 and (s.mods & mods.HALFTIME) > 0) \
 			or ((s.mods & mods.HARDROCK) > 0 and (s.mods & mods.EASY) > 0)\
 			or ((s.mods & mods.RELAX) > 0 and (s.mods & mods.RELAX2) > 0) \
 			or ((s.mods & mods.SUDDENDEATH) > 0 and (s.mods & mods.NOFAIL) > 0) \
 			and not glob.conf.extra["mode"]["anticheat"]:
-				alert = "{}, seems like you've used osu! score submitter limit (Impossible mod combination), this score won't submit for you.".format(username.encode().decode("ASCII", "ignore"))
+				alert = f"{username.encode().decode("ASCII", "ignore")}, seems like you've used osu! score submitter limit (Impossible mod combination), this score won't submit for you.")
 				params = urlencode({"k": glob.conf.config["server"]["apikey"], "to": username.encode().decode("ASCII", "ignore"), "msg": alert})
-				requests.get("{}/api/v1/fokabotMessage?{}".format(glob.conf.config["server"]["banchourl"], params))
+				requests.get(f"{glob.conf.config['server']['banchourl']}/api/v1/fokabotMessage?{params}")
 				return
 
 			# NOTE: Process logging was removed from the client starting from 20180322
@@ -340,10 +341,10 @@ class handler(requestsManager.asyncRequestHandler):
 					replay = self.request.files["score"][0]["body"]
 
 					if UsingRelax:
-						with open("{}_relax/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as f:
+						with open(f"{glob.conf.config['server']['replayspath']}_relax/replay_{s.scoreID}.osr", "wb") as f:
 							f.write(replay)
 					else:
-						with open("{}/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as f:
+						with open(f"{glob.conf.config['server']['replayspath']}/replay_{s.scoreID}.osr", "wb") as f:
 							f.write(replay)
 
 					if glob.conf.config["cono"]["enable"]:
@@ -666,7 +667,7 @@ class handler(requestsManager.asyncRequestHandler):
 		except:
 			# Try except block to avoid more errors
 			try:
-				log.error("Unknown error in {}!\n```{}\n{}```".format(MODULE_NAME, sys.exc_info(), traceback.format_exc()))
+				log.error(f"Unknown error in {MODULE_NAME}!\n```{sys.exc_info()}\n{traceback.format_exc()}```")
 				if glob.sentry:
 					yield tornado.gen.Task(self.captureException, exc_info=True)
 			except:
