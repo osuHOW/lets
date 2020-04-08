@@ -309,7 +309,7 @@ class handler(requestsManager.asyncRequestHandler):
 				requests.get("{}/api/v1/fokabotMessage?{}".format(glob.conf.config["server"]["banchourl"], params))
 				return
 
-			# google translate : I put my face on it, I put my head on it and I put my heart on it
+			# google translate : I put my face on it, I put my head on it and I put my heart o
 			if ((s.mods & mods.DOUBLETIME) > 0 and (s.mods & mods.HALFTIME) > 0) \
 			or ((s.mods & mods.HARDROCK) > 0 and (s.mods & mods.EASY) > 0)\
 			or ((s.mods & mods.RELAX) > 0 and (s.mods & mods.RELAX2) > 0) \
@@ -342,12 +342,12 @@ class handler(requestsManager.asyncRequestHandler):
 					if UsingRelax:
 						with open("{}_relax/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as f:
 							f.write(replay)
-						with open(f"{glob.conf.config['server']['replayspath']}_relax_full/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as rdf:
+						with open(f"{}_relax_full/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as rdf:
 							rdf.write(RPBUILD(s.scoreID, rawReplay=self.request.files["score"][0]["body"]))
 					else:
 						with open("{}/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as f:
 							f.write(replay)
-						with open(f"{glob.conf.config['server']['replayspath']}_full/replay_{s.scoreID}.osr"), "wb") as rdf:
+						with open("{}_full/replay_{}.osr".format(glob.conf.config['server']['replayspath'], (s.scoreID))), "wb") as rdf:
 							rdf.write(RPBUILD(s.scoreID, rawReplay=self.request.files["score"][0]["body"]))
 
 					#circleguard replay parser
@@ -379,7 +379,7 @@ class handler(requestsManager.asyncRequestHandler):
 							RPBUILD = replayHelperRelax.buildFullReplay
 						else:
 							RPBUILD = replayHelper.buildFullReplay
-						# We run this in a separate thread to avoid slowing down score submission,
+						# We run this in a separate thread to avoid slowing down scores submission,
 						# as cono needs a full replay
 						threading.Thread(target=lambda: glob.redis.publish(
 							"cono:analyze", json.dumps({
