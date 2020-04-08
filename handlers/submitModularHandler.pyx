@@ -36,9 +36,6 @@ from objects import scoreboardRelax
 from objects.charts import BeatmapChart, OverallChart
 from secret import butterCake
 from secret.discord_hooks import Webhook
-from secret.circleparse.circleparse import replay as circleparse
-from secret.circlecore.circleguard import cacher, circleguard, comparer, enums, exceptions, investigator, loadable, loader, replay_info, result, utils
-
 MODULE_NAME = "submit_modular"
 class handler(requestsManager.asyncRequestHandler):
 	"""
@@ -345,38 +342,10 @@ class handler(requestsManager.asyncRequestHandler):
 						RPBUILD = replayHelperRelax.buildFullReplay
 						with open("{}_relax/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as f:
 							f.write(replay)
-						with open("{}_relax_full/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as rdf:
-							rdf.write(RPBUILD(s.scoreID, rawReplay=self.request.files["score"][0]["body"]))
 					else:
 						RPBUILD = replayHelper.buildFullReplay
 						with open("{}/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as f:
 							f.write(replay)
-						with open("{}_full/replay_{}.osr".format(glob.conf.config['server']['replayspath'], (s.scoreID)), "wb") as rdf:
-							rdf.write(RPBUILD(s.scoreID, rawReplay=self.request.files["score"][0]["body"]))
-
-					#circleguard replay parser
-					cg = circleguard.Circleguard(glob.conf.config["osuapi"]["apikey"])
-					m = loadable.Map(beatmapInfo.beatmapID, num=1)
-					d = enums.StealDetect(20) + enums.RelaxDetect(50)
-					cg.load(m)
-
-					if UsingRelax:
-						daReplay = loadable.ReplayPath("{}_relax_full/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)))
-					else:
-						daReplay = loadable.ReplayPath("{}_full/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)))
-					log.info(f"[Loaded Replay] ID {s.scoreID} for {daReplay}")
-					c = loadable.Check(daReplay, d)
-					# threading.Thread(target=lambda: cg.run(c)).start()
-					for r in cg.run(c): # r is a StealResult
-						log.info(cg.run(c))
-						if r.ischeat:
-							webhook = Webhook(glob.conf.config["discord"]["ahook"],
-								color=0xadd836,
-								footer="I spot a cheater... [ Replay AC ]")
-							webhook.set_title(title=f"Caught a cheater {username} ({userID})")
-							webhook.set_desc(f"{r.later_replay.username}'s replay on map {r.later_replay.map_id} +{r.later_replay.mods}")
-							webhook.set_desc(f"is stolen from {r.earlier_replay.username} with similarity {r.similarity}")
-							webhook.post()
 
 					if glob.conf.config["cono"]["enable"]:
 						# We run this in a separate thread to avoid slowing down scores submission,
