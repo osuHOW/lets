@@ -342,11 +342,13 @@ class handler(requestsManager.asyncRequestHandler):
 					replay = self.request.files["score"][0]["body"]
 
 					if UsingRelax:
+						RPBUILD = replayHelperRelax.buildFullReplay
 						with open("{}_relax/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as f:
 							f.write(replay)
 						with open("{}_relax_full/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as rdf:
 							rdf.write(RPBUILD(s.scoreID, rawReplay=self.request.files["score"][0]["body"]))
 					else:
+						RPBUILD = replayHelper.buildFullReplay
 						with open("{}/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as f:
 							f.write(replay)
 						with open("{}_full/replay_{}.osr".format(glob.conf.config['server']['replayspath'], (s.scoreID)), "wb") as rdf:
@@ -377,10 +379,6 @@ class handler(requestsManager.asyncRequestHandler):
 							webhook.post()
 
 					if glob.conf.config["cono"]["enable"]:
-						if UsingRelax:
-							RPBUILD = replayHelperRelax.buildFullReplay
-						else:
-							RPBUILD = replayHelper.buildFullReplay
 						# We run this in a separate thread to avoid slowing down scores submission,
 						# as cono needs a full replay
 						threading.Thread(target=lambda: glob.redis.publish(
