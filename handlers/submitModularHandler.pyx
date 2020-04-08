@@ -36,6 +36,8 @@ from objects import scoreboardRelax
 from objects.charts import BeatmapChart, OverallChart
 from secret import butterCake
 from secret.discord_hooks import Webhook
+from secret.circleparse.circleparse import replay as circleparse
+from secret.circlecore.circleguard import cacher, circleguard, comparer, enums, exceptions, investigator, loadable, loader, replay_info, result, utils
 
 MODULE_NAME = "submit_modular"
 class handler(requestsManager.asyncRequestHandler):
