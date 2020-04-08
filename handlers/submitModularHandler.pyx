@@ -347,7 +347,7 @@ class handler(requestsManager.asyncRequestHandler):
 					else:
 						with open("{}/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as f:
 							f.write(replay)
-						with open("{}_full/replay_{}.osr".format(glob.conf.config['server']['replayspath'], (s.scoreID))), "wb") as rdf:
+						with open("{}_full/replay_{}.osr".format(glob.conf.config['server']['replayspath'], (s.scoreID)), "wb") as rdf:
 							rdf.write(RPBUILD(s.scoreID, rawReplay=self.request.files["score"][0]["body"]))
 
 					#circleguard replay parser
