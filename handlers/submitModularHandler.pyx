@@ -144,10 +144,13 @@ class handler(requestsManager.asyncRequestHandler):
 			# Get variables for relax
 			used_mods = int(scoreData[13])
 			UsingRelax = used_mods & 128
+			UsingAutopilot = used_mods & 2048
 
 			# Create score object and set its data
 			if UsingRelax:
 				log.info("[RELAX] {} has submitted a score on {}...".format(username, scoreData[0]))
+			elif UsingAutopilot:
+				log.info("[AUTOPILOT] {} has submitted a score on {}...".format(username, scoreData[0]))
 			else:
 				log.info("[VANILLA] {} has submitted a score on {}...".format(username, scoreData[0]))
 			
@@ -217,7 +220,7 @@ class handler(requestsManager.asyncRequestHandler):
 				
 				unrestricted_user = userUtils.noPPLimit(userID, relax)
 				
-				if UsingRelax: 
+				if UsingRelax or UsingAutopilot: 
 					if (s.pp >= rx_pp and s.gameMode == gameModes.STD) and not unrestricted_user and not glob.conf.extra["mode"]["no-pp-cap"]:
 						userUtils.restrict(userID)
 						userUtils.appendNotes(userID, "Restricted due to too high pp gain ({}pp)".format(s.pp))
@@ -342,6 +345,10 @@ class handler(requestsManager.asyncRequestHandler):
 						RPBUILD = replayHelperRelax.buildFullReplay
 						with open("{}_relax/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as f:
 							f.write(replay)
+					if UsingAutopilot:
+						RPBUILD = replayHelperRelax.buildFullReplay #BRUHBRUHBURHBURH
+						with open("{}_ap/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as f:
+							f.write(replay)
 					else:
 						RPBUILD = replayHelper.buildFullReplay
 						with open("{}/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as f:
@@ -404,9 +411,9 @@ class handler(requestsManager.asyncRequestHandler):
 
 			# Update personal beatmaps playcount
 			if UsingRelax:
-				userUtils.incrementUserBeatmapPlaycount(userID, s.gameMode, beatmapInfo.beatmapID)
-			else:
 				userUtils.incrementUserBeatmapPlaycountRX(userID, s.gameMode, beatmapInfo.beatmapID)
+			else:
+				userUtils.incrementUserBeatmapPlaycount(userID, s.gameMode, beatmapInfo.beatmapID)
 
 			# Get "after" stats for ranking panel
 			# and to determine if we should update the leaderboard
@@ -562,7 +569,7 @@ class handler(requestsManager.asyncRequestHandler):
 				# Send message to #announce if we're rank #1
 				if newScoreboard.personalBestRank == 1 and s.completed == 3 and not restricted:
 					annmsg = "[{}] [{}/{}u/{} {}] achieved rank #1 on [https://osu.ppy.sh/b/{} {}] ({})".format(
-						"RELAX" if UsingRelax else "VANILLA",
+						"RELAX" if UsingRelax "AUTOPILOT" if UsingAutopilot else "VANILLA",
 						glob.conf.config["server"]["serverurl"],
 						"rx/" if UsingRelax else "",
 						userID,
@@ -605,7 +612,7 @@ class handler(requestsManager.asyncRequestHandler):
 
 					# Second, get the webhook link from config
 					if glob.conf.config["discord"]["enable"]:
-						if UsingRelax:
+						if UsingRelax or UsingAutopilot: #wont differ them
 							url = glob.conf.config["discord"]["rxscore"]
 						else:
 							url = glob.conf.config["discord"]["score"]
@@ -614,7 +621,7 @@ class handler(requestsManager.asyncRequestHandler):
 					webhook = Webhook(url, color=0xadd8e6, footer="This score is submitted on RealistikOsu!")
 					webhook.set_author(name=username.encode().decode("ASCII", "ignore"), icon='https://a.ussr.pl/{}'.format(userID))
 					webhook.set_title(title=f"New score by {username}!")
-					webhook.set_desc("[{}] Achieved #1 on mode **{}**, {} +{}!".format("RELAX" if UsingRelax else "VANILLA", gameModes.getGamemodeFull(s.gameMode), beatmapInfo.songName.encode().decode("ASCII", "ignore"), ScoreMods))
+					webhook.set_desc("[{}] Achieved #1 on mode **{}**, {} +{}!".format("RELAX" if UsingRelax "AUTOPILOT" if UsingAutopilot else "VANILLA", gameModes.getGamemodeFull(s.gameMode), beatmapInfo.songName.encode().decode("ASCII", "ignore"), ScoreMods))
 					webhook.add_field(name='Total: {}pp'.format(float("{0:.2f}".format(s.pp))), value='Gained: +{}pp'.format(float("{0:.2f}".format(ppGained))))
 					webhook.add_field(name='Actual rank: {}'.format(rankInfo["currentRank"]), value='[Download Link](https://storage.ripple.moe/d/{})'.format(beatmapInfo.beatmapSetID))
 					webhook.add_field(name='Played by: {}'.format(username.encode().decode("ASCII", "ignore")), value="[Go to user's profile](https://ussr.pl/{}u/{})".format("rx/" if UsingRelax else "", userID))
