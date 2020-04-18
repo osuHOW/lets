@@ -196,6 +196,8 @@ class handler(requestsManager.asyncRequestHandler):
 				length = math.ceil(int(self.get_argument("ft")) / 1000)
 			if UsingRelax: 	
 				userUtils.incrementPlaytimeRX(userID, s.gameMode, length)
+			if UsingAutopilot:
+				userUtils.incrementPlaytimeAP(userID, s.gameMode, length)
 			else:
 				userUtils.incrementPlaytime(userID, s.gameMode, length)
 			midPPCalcException = None
@@ -398,20 +400,24 @@ class handler(requestsManager.asyncRequestHandler):
 			# Get "before" stats for ranking panel (only if passed)
 			if s.passed:
 				# Get stats and rank
-				oldUserStats = glob.userStatsCacheRX.get(userID, s.gameMode) if UsingRelax else glob.userStatsCache.get(userID, s.gameMode)
-				oldRank = userUtils.getGameRankRx(userID, s.gameMode) if UsingRelax else userUtils.getGameRank(userID, s.gameMode) 
+				oldUserStats = glob.userStatsCacheRX.get(userID, s.gameMode) if UsingRelax glob.userStatsCacheAP.get(userID, s.gameMode) if UsingAutopilot else glob.userStatsCache.get(userID, s.gameMode)
+				oldRank = userUtils.getGameRankRx(userID, s.gameMode) if UsingRelax userUtils.getGameRankAP(userID, s.gameMode) if UsingAutopilot else userUtils.getGameRank(userID, s.gameMode) 
 
 			# Always update users stats (total/ranked score, playcount, level, acc and pp)
 			# even if not passed
 			log.debug("Updating {}'s stats...".format(username))
 			if UsingRelax:
 				userUtils.updateStatsRx(userID, s)
+			if UsingAutopilot:
+				userUtils.updateStatsAP(userID, s)
 			else:
 				userUtils.updateStats(userID, s)
 
 			# Update personal beatmaps playcount
 			if UsingRelax:
 				userUtils.incrementUserBeatmapPlaycountRX(userID, s.gameMode, beatmapInfo.beatmapID)
+			if UsingAutopilot:
+				userUtils.incrementUserBeatmapPlaycountAP(userID, s.gameMode, beatmapInfo.beatmapID)
 			else:
 				userUtils.incrementUserBeatmapPlaycount(userID, s.gameMode, beatmapInfo.beatmapID)
 
@@ -425,6 +431,11 @@ class handler(requestsManager.asyncRequestHandler):
 					glob.userStatsCacheRX.update(userID, s.gameMode, newUserStats)
 					leaderboardHelperRelax.update(userID, newUserStats["pp"], s.gameMode)
 					maxCombo = userUtils.getMaxComboRX(userID, s.gameMode)
+				if UsingAutopilot:
+					newUserStats = userUtils.getUserStatsAP(userID, s.gameMode)
+					glob.userStatsCacheAP.update(userID, s.gameMode, newUserStats)
+					leaderboardHelperAutopilot.update(userID, newUserStats["pp"], s.gameMode)
+					maxCombo = userUtils.getMaxComboAP(userID, s.gameMode)
 				else:
 					newUserStats = userUtils.getUserStats(userID, s.gameMode)
 					glob.userStatsCache.update(userID, s.gameMode, newUserStats)
@@ -443,6 +454,8 @@ class handler(requestsManager.asyncRequestHandler):
 			# Update total hits
 			if UsingRelax:
 				userUtils.updateTotalHitsRX(score=s)
+			if UsingAutopilot:
+				userUtils.updateTotalHitsAP(score=s)
 			else:
 				userUtils.updateTotalHits(score=s)
 			# TODO: Update max combo
@@ -571,7 +584,7 @@ class handler(requestsManager.asyncRequestHandler):
 					annmsg = "[{}] [{}/{}u/{} {}] achieved rank #1 on [https://osu.ppy.sh/b/{} {}] ({})".format(
 						"RELAX" if UsingRelax "AUTOPILOT" if UsingAutopilot else "VANILLA",
 						glob.conf.config["server"]["serverurl"],
-						"rx/" if UsingRelax else "",
+						"rx/" if UsingRelax "ap/" if UsingAutopilot else "",
 						userID,
 						username.encode().decode("ASCII", "ignore"),
 						beatmapInfo.beatmapID,
@@ -624,7 +637,7 @@ class handler(requestsManager.asyncRequestHandler):
 					webhook.set_desc("[{}] Achieved #1 on mode **{}**, {} +{}!".format("RELAX" if UsingRelax "AUTOPILOT" if UsingAutopilot else "VANILLA", gameModes.getGamemodeFull(s.gameMode), beatmapInfo.songName.encode().decode("ASCII", "ignore"), ScoreMods))
 					webhook.add_field(name='Total: {}pp'.format(float("{0:.2f}".format(s.pp))), value='Gained: +{}pp'.format(float("{0:.2f}".format(ppGained))))
 					webhook.add_field(name='Actual rank: {}'.format(rankInfo["currentRank"]), value='[Download Link](https://storage.ripple.moe/d/{})'.format(beatmapInfo.beatmapSetID))
-					webhook.add_field(name='Played by: {}'.format(username.encode().decode("ASCII", "ignore")), value="[Go to user's profile](https://ussr.pl/{}u/{})".format("rx/" if UsingRelax else "", userID))
+					webhook.add_field(name='Played by: {}'.format(username.encode().decode("ASCII", "ignore")), value="[Go to user's profile](https://ussr.pl/{}u/{})".format("rx/" if UsingRelax "ap/" if UsingAutopilot else "", userID))
 					webhook.set_image('https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(beatmapInfo.beatmapSetID))
 					webhook.post()
 
