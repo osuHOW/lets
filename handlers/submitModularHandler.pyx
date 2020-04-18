@@ -24,6 +24,7 @@ from constants.exceptions import ppCalcException
 from helpers import aeshelper
 from helpers import replayHelper
 from helpers import replayHelperRelax
+from helpers import replayHelperAuto
 from helpers import leaderboardHelper
 from helpers import leaderboardHelperRelax
 from helpers.generalHelper import zingonify, getHackByFlag
