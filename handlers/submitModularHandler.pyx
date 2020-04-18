@@ -465,7 +465,7 @@ class handler(requestsManager.asyncRequestHandler):
 				if UsingAutopilot:
 					newUserStats = userUtils.getUserStatsAP(userID, s.gameMode)
 					glob.userStatsCacheAP.update(userID, s.gameMode, newUserStats)
-					leaderboardHelperAutopilot.update(userID, newUserStats["pp"], s.gameMode)
+					leaderboardHelperAuto.update(userID, newUserStats["pp"], s.gameMode)
 					maxCombo = userUtils.getMaxComboAP(userID, s.gameMode)
 				else:
 					newUserStats = userUtils.getUserStats(userID, s.gameMode)
