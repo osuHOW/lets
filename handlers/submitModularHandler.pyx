@@ -254,13 +254,28 @@ class handler(requestsManager.asyncRequestHandler):
 			
 			# Right before submitting the score, get the personal best score object (we need it for charts)
 			if s.passed and s.oldPersonalBest > 0:
-				oldPersonalBestRank = glob.personalBestCacheRX.get(userID, s.fileMd5) if UsingRelax glob.personalBestCacheAP.get(userID, s.fileMd5) if UsingAutopilot else glob.personalBestCache.get(userID, s.fileMd5)
+				if UsingRelax:
+					oldPersonalBestRank = glob.personalBestCacheRX.get(userID, s.fileMd5)
+				if UsingAutopilot:
+					oldPersonalBestRank = glob.personalBestCacheAP.get(userID, s.fileMd5)
+				else:
+					oldPersonalBestRank = glob.personalBestCache.get(userID, s.fileMd5)
 				if oldPersonalBestRank == 0:
 					# oldPersonalBestRank not found in cache, get it from db through a scoreboard object
-					oldScoreboard = scoreboardRelax.scoreboardRelax(username, s.gameMode, beatmapInfo, False) if UsingRelax scoreboardAuto.scoreboardAuto(username, s.gameMode, beatmapInfo, False) if UsingAutopilot else scoreboard.scoreboard(username, s.gameMode, beatmapInfo, False)
+					if UsingRelax:
+						oldScoreboard = scoreboardRelax.scoreboardRelax(username, s.gameMode, beatmapInfo, False)
+					if UsingAutopilot:
+						oldScoreboard = scoreboardAuto.scoreboardAuto(username, s.gameMode, beatmapInfo, False)
+					else:
+						oldScoreboard = scoreboard.scoreboard(username, s.gameMode, beatmapInfo, False)
 					oldScoreboard.setPersonalBestRank()
 					oldPersonalBestRank = max(oldScoreboard.personalBestRank, 0)
-				oldPersonalBest = scoreRelax.score(s.oldPersonalBest, oldPersonalBestRank) if UsingRelax scoreAuto.score(s.oldPersonalBest, oldPersonalBestRank) if UsingAutopilot else score.score(s.oldPersonalBest, oldPersonalBestRank)
+				if UsingRelax:
+					oldPersonalBest = scoreRelax.score(s.oldPersonalBest, oldPersonalBestRank)
+				if UsingAutopilot:
+					oldPersonalBest = scoreAuto.score(s.oldPersonalBest, oldPersonalBestRank)
+				else:
+					oldPersonalBest = score.score(s.oldPersonalBest, oldPersonalBestRank)
 			else:
 				oldPersonalBestRank = 0
 				oldPersonalBest = None
@@ -407,8 +422,15 @@ class handler(requestsManager.asyncRequestHandler):
 			# Get "before" stats for ranking panel (only if passed)
 			if s.passed:
 				# Get stats and rank
-				oldUserStats = glob.userStatsCacheRX.get(userID, s.gameMode) if UsingRelax glob.userStatsCacheAP.get(userID, s.gameMode) if UsingAutopilot else glob.userStatsCache.get(userID, s.gameMode)
-				oldRank = userUtils.getGameRankRx(userID, s.gameMode) if UsingRelax userUtils.getGameRankAP(userID, s.gameMode) if UsingAutopilot else userUtils.getGameRank(userID, s.gameMode) 
+				if UsingRelax:
+					oldUserStats = glob.userStatsCacheRX.get(userID, s.gameMode)
+					oldRank = userUtils.getGameRankRx(userID, s.gameMode)
+				if UsingAutopilot:
+					oldUserStats = glob.userStatsCacheAP.get(userID, s.gameMode)
+					oldRank = userUtils.getGameRankAP(userID, s.gameMode)
+				else:
+					oldUserStats = glob.userStatsCache.get(userID, s.gameMode)
+					oldRank = userUtils.getGameRank(userID, s.gameMode)
 
 			# Always update users stats (total/ranked score, playcount, level, acc and pp)
 			# even if not passed
@@ -588,10 +610,19 @@ class handler(requestsManager.asyncRequestHandler):
 
 				# Send message to #announce if we're rank #1
 				if newScoreboard.personalBestRank == 1 and s.completed == 3 and not restricted:
+					if UsingRelax:
+						DAGAyMode = "RELAX"
+						ProfAppend = "rx/"
+					if UsingAutopilot:
+						DAGAyMode = "AUTOPILOT"
+						ProfAppend = "ap/"
+					else:
+						DAGAyMode = "VANILLA"
+						ProfAppend = ""
 					annmsg = "[{}] [{}/{}u/{} {}] achieved rank #1 on [https://osu.ppy.sh/b/{} {}] ({})".format(
-						"RELAX" if UsingRelax "AUTOPILOT" if UsingAutopilot else "VANILLA",
+						DAGAyMode,
 						glob.conf.config["server"]["serverurl"],
-						"rx/" if UsingRelax "ap/" if UsingAutopilot else "",
+						ProfAppend,
 						userID,
 						username.encode().decode("ASCII", "ignore"),
 						beatmapInfo.beatmapID,
@@ -641,10 +672,10 @@ class handler(requestsManager.asyncRequestHandler):
 					webhook = Webhook(url, color=0xadd8e6, footer="This score is submitted on RealistikOsu!")
 					webhook.set_author(name=username.encode().decode("ASCII", "ignore"), icon='https://a.ussr.pl/{}'.format(userID))
 					webhook.set_title(title=f"New score by {username}!")
-					webhook.set_desc("[{}] Achieved #1 on mode **{}**, {} +{}!".format("RELAX" if UsingRelax "AUTOPILOT" if UsingAutopilot else "VANILLA", gameModes.getGamemodeFull(s.gameMode), beatmapInfo.songName.encode().decode("ASCII", "ignore"), ScoreMods))
+					webhook.set_desc("[{}] Achieved #1 on mode **{}**, {} +{}!".format(DAGAyMode, gameModes.getGamemodeFull(s.gameMode), beatmapInfo.songName.encode().decode("ASCII", "ignore"), ScoreMods))
 					webhook.add_field(name='Total: {}pp'.format(float("{0:.2f}".format(s.pp))), value='Gained: +{}pp'.format(float("{0:.2f}".format(ppGained))))
 					webhook.add_field(name='Actual rank: {}'.format(rankInfo["currentRank"]), value='[Download Link](https://storage.ripple.moe/d/{})'.format(beatmapInfo.beatmapSetID))
-					webhook.add_field(name='Played by: {}'.format(username.encode().decode("ASCII", "ignore")), value="[Go to user's profile](https://ussr.pl/{}u/{})".format("rx/" if UsingRelax "ap/" if UsingAutopilot else "", userID))
+					webhook.add_field(name='Played by: {}'.format(username.encode().decode("ASCII", "ignore")), value="[Go to user's profile](https://ussr.pl/{}u/{})".format(ProfAppend, userID))
 					webhook.set_image('https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(beatmapInfo.beatmapSetID))
 					webhook.post()
 
