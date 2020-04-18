@@ -27,6 +27,7 @@ from helpers import replayHelperRelax
 from helpers import replayHelperAuto
 from helpers import leaderboardHelper
 from helpers import leaderboardHelperRelax
+from helpers import leaderboardHelperAuto
 from helpers.generalHelper import zingonify, getHackByFlag
 from objects import beatmap
 from objects import glob
