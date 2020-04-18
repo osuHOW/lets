@@ -158,6 +158,8 @@ class handler(requestsManager.asyncRequestHandler):
 			
 			if UsingRelax:
 				s = scoreRelax.score()
+			if UsingAutopilot:
+				s = scoreAuto.score()
 			else:
 				s = score.score()
 			s.setDataFromScoreData(scoreData, quit_=quit_, failed=failed)
@@ -222,7 +224,10 @@ class handler(requestsManager.asyncRequestHandler):
 				
 				relax = 1 if used_mods & 128 else 0
 				
-				unrestricted_user = userUtils.noPPLimit(userID, relax)
+				if UsingAutopilot:
+					unrestricted_user = userUtils.noPPLimitAP(userID)
+				else:
+					unrestricted_user = userUtils.noPPLimit(userID, relax)
 				
 				if UsingRelax or UsingAutopilot: 
 					if (s.pp >= rx_pp and s.gameMode == gameModes.STD) and not unrestricted_user and not glob.conf.extra["mode"]["no-pp-cap"]:
@@ -249,13 +254,13 @@ class handler(requestsManager.asyncRequestHandler):
 			
 			# Right before submitting the score, get the personal best score object (we need it for charts)
 			if s.passed and s.oldPersonalBest > 0:
-				oldPersonalBestRank = glob.personalBestCacheRX.get(userID, s.fileMd5) if UsingRelax else glob.personalBestCache.get(userID, s.fileMd5)
+				oldPersonalBestRank = glob.personalBestCacheRX.get(userID, s.fileMd5) if UsingRelax glob.personalBestCacheAP.get(userID, s.fileMd5) if UsingAutopilot else glob.personalBestCache.get(userID, s.fileMd5)
 				if oldPersonalBestRank == 0:
 					# oldPersonalBestRank not found in cache, get it from db through a scoreboard object
-					oldScoreboard = scoreboardRelax.scoreboardRelax(username, s.gameMode, beatmapInfo, False) if UsingRelax else scoreboard.scoreboard(username, s.gameMode, beatmapInfo, False)
+					oldScoreboard = scoreboardRelax.scoreboardRelax(username, s.gameMode, beatmapInfo, False) if UsingRelax scoreboardAuto.scoreboardAuto(username, s.gameMode, beatmapInfo, False) if UsingAutopilot else scoreboard.scoreboard(username, s.gameMode, beatmapInfo, False)
 					oldScoreboard.setPersonalBestRank()
 					oldPersonalBestRank = max(oldScoreboard.personalBestRank, 0)
-				oldPersonalBest = scoreRelax.score(s.oldPersonalBest, oldPersonalBestRank) if UsingRelax else score.score(s.oldPersonalBest, oldPersonalBestRank)
+				oldPersonalBest = scoreRelax.score(s.oldPersonalBest, oldPersonalBestRank) if UsingRelax scoreAuto.score(s.oldPersonalBest, oldPersonalBestRank) if UsingAutopilot else score.score(s.oldPersonalBest, oldPersonalBestRank)
 			else:
 				oldPersonalBestRank = 0
 				oldPersonalBest = None
@@ -295,7 +300,7 @@ class handler(requestsManager.asyncRequestHandler):
 				log.warning("**{}** ({}) has been restricted due clientside anti cheat flag **({})**".format(username, userID, haxFlags), "cm")
 			'''
 
-			# สวัสดีฮะ ผมเต้เอ็กเซนไฟไหม้
+			# Hello, I'm Te Exx's fire. (google translate)
 			if s.score < 0 or s.score > (2 ** 63) - 1 and glob.conf.extra["mode"]["anticheat"]:
 				userUtils.ban(userID)
 				userUtils.appendNotes(userID, "Banned due to negative score (score submitter)")
@@ -350,7 +355,7 @@ class handler(requestsManager.asyncRequestHandler):
 						with open("{}_relax/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as f:
 							f.write(replay)
 					if UsingAutopilot:
-						RPBUILD = replayHelperRelax.buildFullReplay #BRUHBRUHBURHBURH
+						RPBUILD = replayHelperAuto.buildFullReplay
 						with open("{}_ap/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as f:
 							f.write(replay)
 					else:
