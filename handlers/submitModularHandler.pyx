@@ -148,7 +148,7 @@ class handler(requestsManager.asyncRequestHandler):
 			# Get variables for relax
 			used_mods = int(scoreData[13])
 			UsingRelax = used_mods & 128
-			UsingAutopilot = used_mods & 2048
+			UsingAutopilot = used_mods & 8192
 
 			# Create score object and set its data
 			if UsingRelax:
