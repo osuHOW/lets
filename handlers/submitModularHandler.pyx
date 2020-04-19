@@ -160,7 +160,7 @@ class handler(requestsManager.asyncRequestHandler):
 			
 			if UsingRelax:
 				s = scoreRelax.score()
-			if UsingAutopilot:
+			elif UsingAutopilot:
 				s = scoreAuto.score()
 			else:
 				s = score.score()
@@ -202,7 +202,7 @@ class handler(requestsManager.asyncRequestHandler):
 				length = math.ceil(int(self.get_argument("ft")) / 1000)
 			if UsingRelax: 	
 				userUtils.incrementPlaytimeRX(userID, s.gameMode, length)
-			if UsingAutopilot:
+			elif UsingAutopilot:
 				userUtils.incrementPlaytimeAP(userID, s.gameMode, length)
 			else:
 				userUtils.incrementPlaytime(userID, s.gameMode, length)
@@ -258,7 +258,7 @@ class handler(requestsManager.asyncRequestHandler):
 			if s.passed and s.oldPersonalBest > 0:
 				if UsingRelax:
 					oldPersonalBestRank = glob.personalBestCacheRX.get(userID, s.fileMd5)
-				if UsingAutopilot:
+				elif UsingAutopilot:
 					oldPersonalBestRank = glob.personalBestCacheAP.get(userID, s.fileMd5)
 				else:
 					oldPersonalBestRank = glob.personalBestCache.get(userID, s.fileMd5)
@@ -266,7 +266,7 @@ class handler(requestsManager.asyncRequestHandler):
 					# oldPersonalBestRank not found in cache, get it from db through a scoreboard object
 					if UsingRelax:
 						oldScoreboard = scoreboardRelax.scoreboardRelax(username, s.gameMode, beatmapInfo, False)
-					if UsingAutopilot:
+					elif UsingAutopilot:
 						oldScoreboard = scoreboardAuto.scoreboardAuto(username, s.gameMode, beatmapInfo, False)
 					else:
 						oldScoreboard = scoreboard.scoreboard(username, s.gameMode, beatmapInfo, False)
@@ -274,7 +274,7 @@ class handler(requestsManager.asyncRequestHandler):
 					oldPersonalBestRank = max(oldScoreboard.personalBestRank, 0)
 				if UsingRelax:
 					oldPersonalBest = scoreRelax.score(s.oldPersonalBest, oldPersonalBestRank)
-				if UsingAutopilot:
+				elif UsingAutopilot:
 					oldPersonalBest = scoreAuto.score(s.oldPersonalBest, oldPersonalBestRank)
 				else:
 					oldPersonalBest = score.score(s.oldPersonalBest, oldPersonalBestRank)
@@ -371,7 +371,7 @@ class handler(requestsManager.asyncRequestHandler):
 						RPBUILD = replayHelperRelax.buildFullReplay
 						with open("{}_relax/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as f:
 							f.write(replay)
-					if UsingAutopilot:
+					elif UsingAutopilot:
 						RPBUILD = replayHelperAuto.buildFullReplay
 						with open("{}_ap/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], (s.scoreID)), "wb") as f:
 							f.write(replay)
@@ -427,7 +427,7 @@ class handler(requestsManager.asyncRequestHandler):
 				if UsingRelax:
 					oldUserStats = glob.userStatsCacheRX.get(userID, s.gameMode)
 					oldRank = userUtils.getGameRankRx(userID, s.gameMode)
-				if UsingAutopilot:
+				elif UsingAutopilot:
 					oldUserStats = glob.userStatsCacheAP.get(userID, s.gameMode)
 					oldRank = userUtils.getGameRankAP(userID, s.gameMode)
 				else:
@@ -441,7 +441,7 @@ class handler(requestsManager.asyncRequestHandler):
 			if UsingRelax:
 				userUtils.incrementUserBeatmapPlaycountRX(userID, s.gameMode, beatmapInfo.beatmapID)
 				userUtils.updateStatsRx(userID, s)
-			if UsingAutopilot:
+			elif UsingAutopilot:
 				userUtils.incrementUserBeatmapPlaycountAP(userID, s.gameMode, beatmapInfo.beatmapID)
 				userUtils.updateStatsAP(userID, s)
 			else:
@@ -458,7 +458,7 @@ class handler(requestsManager.asyncRequestHandler):
 					glob.userStatsCacheRX.update(userID, s.gameMode, newUserStats)
 					leaderboardHelperRelax.update(userID, newUserStats["pp"], s.gameMode)
 					maxCombo = userUtils.getMaxComboRX(userID, s.gameMode)
-				if UsingAutopilot:
+				elif UsingAutopilot:
 					newUserStats = userUtils.getUserStatsAP(userID, s.gameMode)
 					glob.userStatsCacheAP.update(userID, s.gameMode, newUserStats)
 					leaderboardHelperAuto.update(userID, newUserStats["pp"], s.gameMode)
@@ -474,7 +474,7 @@ class handler(requestsManager.asyncRequestHandler):
 					if UsingRelax:
 						leaderboardHelperRelax.update(userID, newUserStats["pp"], s.gameMode)
 						leaderboardHelperRelax.updateCountry(userID, newUserStats["pp"], s.gameMode)
-					if UsingAutopilot:
+					elif UsingAutopilot:
 						leaderboardHelperAuto.update(userID, newUserStats["pp"], s.gameMode)
 						leaderboardHelperAuto.updateCountry(userID, newUserStats["pp"], s.gameMode)
 					else:
@@ -484,7 +484,7 @@ class handler(requestsManager.asyncRequestHandler):
 			# Update total hits
 			if UsingRelax:
 				userUtils.updateTotalHitsRX(score=s)
-			if UsingAutopilot:
+			elif UsingAutopilot:
 				userUtils.updateTotalHitsAP(score=s)
 			else:
 				userUtils.updateTotalHits(score=s)
@@ -519,7 +519,7 @@ class handler(requestsManager.asyncRequestHandler):
 				# Get personal best after submitting the score
 				if UsingRelax:
 					newScoreboard = scoreboardRelax.scoreboardRelax(username, s.gameMode, beatmapInfo, False)
-				if UsingAutopilot:
+				elif UsingAutopilot:
 					newScoreboard = scoreboardAuto.scoreboardAuto(username, s.gameMode, beatmapInfo, False)
 				else:
 					newScoreboard = scoreboard.scoreboard(username, s.gameMode, beatmapInfo, False)
