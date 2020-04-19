@@ -32,6 +32,7 @@ from handlers import downloadMapHandler
 from handlers import emptyHandler
 from handlers import getFullReplayHandler
 from handlers import getFullReplayHandlerRelax
+from handlers import getFullReplayHandlerAuto
 from handlers import getReplayHandler
 from handlers import getScoresHandler
 from handlers import getScreenshotHandler
@@ -84,10 +85,11 @@ def make_app():
 		(r"/s/(.*)", downloadMapHandler.handler),
 		(r"/web/replays/(.*)", getFullReplayHandler.handler),
 		(r"/web/replays_relax/(.*)", getFullReplayHandlerRelax.handler),
+		(r"/web/replays_auto/(.*)", getFullReplayHandlerAuto.handler),
 		(r"/web/errorlogs/(.*)", getFullErrorHandler.handler),
 
-		(r"/p/verify", redirectHandler.handler, dict(destination="https://ainu.pw/")),
-		(r"/u/(.*)", redirectHandler.handler, dict(destination="https://ainu.pw/u/{}")),
+		(r"/p/verify", redirectHandler.handler, dict(destination="https://ussr.pl/")),
+		(r"/u/(.*)", redirectHandler.handler, dict(destination="https://ussr.pl/u/{}")),
 
 		(r"/api/v1/status", apiStatusHandler.handler),
 		(r"/api/v1/pp", apiPPHandler.handler),
