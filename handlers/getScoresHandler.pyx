@@ -5,6 +5,7 @@ import tornado.web
 from objects import beatmap
 from objects import scoreboard
 from objects import scoreboardRelax
+from objects import scoreboardAuto
 from common.constants import privileges
 from common.log import logUtils as log
 from common.ripple import userUtils
