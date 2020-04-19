@@ -36,6 +36,6 @@ class userStatsCacheAP:
 		if data is None:
 			data = {}
 		if len(data) == 0:
-			data = userUtils.getUserStatsRx(userID, gameMode)
-		log.debug("userStatsCacheRX set {}".format(data))
+			data = userUtils.getUserStatsAP(userID, gameMode)
+		log.debug("userStatsCacheAP set {}".format(data))
 		glob.redis.set("lets:user_stats_cache_auto:{}:{}".format(gameMode, userID), json.dumps(data), 1800)
