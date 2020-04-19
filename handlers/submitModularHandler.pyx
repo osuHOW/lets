@@ -437,20 +437,16 @@ class handler(requestsManager.asyncRequestHandler):
 			# Always update users stats (total/ranked score, playcount, level, acc and pp)
 			# even if not passed
 			log.debug("Updating {}'s stats...".format(username))
-			if UsingRelax:
-				userUtils.updateStatsRx(userID, s)
-			if UsingAutopilot:
-				userUtils.updateStatsAP(userID, s)
-			else:
-				userUtils.updateStats(userID, s)
-
 			# Update personal beatmaps playcount
 			if UsingRelax:
 				userUtils.incrementUserBeatmapPlaycountRX(userID, s.gameMode, beatmapInfo.beatmapID)
+				userUtils.updateStatsRx(userID, s)
 			if UsingAutopilot:
 				userUtils.incrementUserBeatmapPlaycountAP(userID, s.gameMode, beatmapInfo.beatmapID)
+				userUtils.updateStatsAP(userID, s)
 			else:
 				userUtils.incrementUserBeatmapPlaycount(userID, s.gameMode, beatmapInfo.beatmapID)
+				userUtils.updateStats(userID, s)
 
 			# Get "after" stats for ranking panel
 			# and to determine if we should update the leaderboard
@@ -531,21 +527,16 @@ class handler(requestsManager.asyncRequestHandler):
 				newScoreboard.setPersonalBestRank()
 				personalBestID = newScoreboard.getPersonalBest()
 				assert personalBestID is not None
-					
-				if UsingRelax:
-					currentPersonalBest = scoreRelax.score(personalBestID, newScoreboard.personalBestRank)
-				if UsingAutopilot:
-					currentPersonalBest = scoreAuto.score(personalBestID, newScoreboard.personalBestRank)
-				else:
-					currentPersonalBest = score.score(personalBestID, newScoreboard.personalBestRank)
-
 				# Get rank info (current rank, pp/score to next rank, user who is 1 rank above us)
 				if bool(s.mods & 128):
 					rankInfo = leaderboardHelperRelax.getRankInfo(userID, s.gameMode)
+					currentPersonalBest = scoreRelax.score(personalBestID, newScoreboard.personalBestRank)
 				if bool(s.mods & 8192):
 					rankInfo = leaderboardHelperAuto.getRankInfo(userID, s.gameMode)
+					currentPersonalBest = scoreAuto.score(personalBestID, newScoreboard.personalBestRank)
 				else:
 					rankInfo = leaderboardHelper.getRankInfo(userID, s.gameMode)
+					currentPersonalBest = score.score(personalBestID, newScoreboard.personalBestRank)
 
 				# Output dictionary
 				if newCharts:
@@ -645,50 +636,51 @@ class handler(requestsManager.asyncRequestHandler):
 					requests.get("{}/api/v1/fokabotMessage?{}".format(glob.conf.config["server"]["banchourl"], params))
 
 					# Let's send them to Discord too, because we cool :sunglasses:
-					# First, let's check what mod does the play have
-					ScoreMods = ""
-					if s.mods == 0:
-						ScoreMods += "NM"
-					if s.mods & mods.NOFAIL > 0:
-						ScoreMods += "NF"
-					if s.mods & mods.EASY > 0:
-						ScoreMods += "EZ"
-					if s.mods & mods.HIDDEN > 0:
-						ScoreMods += "HD"
-					if s.mods & mods.HARDROCK > 0:
-						ScoreMods += "HR"
-					if s.mods & mods.DOUBLETIME > 0:
-						ScoreMods += "DT"
-					if s.mods & mods.HALFTIME > 0:
-						ScoreMods += "HT"
-					if s.mods & mods.FLASHLIGHT > 0:
-						ScoreMods += "FL"
-					if s.mods & mods.SPUNOUT > 0:
-						ScoreMods += "SO"
-					if s.mods & mods.TOUCHSCREEN > 0:
-						ScoreMods += "TD"
-					if s.mods & mods.RELAX > 0:
-						ScoreMods += "RX"
-					if s.mods & mods.RELAX2 > 0:
-						ScoreMods += "AP"
+					
 
-					# Second, get the webhook link from config
 					if glob.conf.config["discord"]["enable"]:
+						# First, let's check what mod does the play have
+						ScoreMods = ""
+						if s.mods == 0:
+							ScoreMods += "NM"
+						if s.mods & mods.NOFAIL > 0:
+							ScoreMods += "NF"
+						if s.mods & mods.EASY > 0:
+							ScoreMods += "EZ"
+						if s.mods & mods.HIDDEN > 0:
+							ScoreMods += "HD"
+						if s.mods & mods.HARDROCK > 0:
+							ScoreMods += "HR"
+						if s.mods & mods.DOUBLETIME > 0:
+							ScoreMods += "DT"
+						if s.mods & mods.HALFTIME > 0:
+							ScoreMods += "HT"
+						if s.mods & mods.FLASHLIGHT > 0:
+							ScoreMods += "FL"
+						if s.mods & mods.SPUNOUT > 0:
+							ScoreMods += "SO"
+						if s.mods & mods.TOUCHSCREEN > 0:
+							ScoreMods += "TD"
+						if s.mods & mods.RELAX > 0:
+							ScoreMods += "RX"
+						if s.mods & mods.RELAX2 > 0:
+							ScoreMods += "AP"
+						# Second, get the webhook link from config
 						if UsingRelax or UsingAutopilot: #wont differ them
 							url = glob.conf.config["discord"]["rxscore"]
 						else:
 							url = glob.conf.config["discord"]["score"]
 
-					# Then post them!
-					webhook = Webhook(url, color=0xadd8e6, footer="This score is submitted on RealistikOsu!")
-					webhook.set_author(name=username.encode().decode("ASCII", "ignore"), icon='https://a.ussr.pl/{}'.format(userID))
-					webhook.set_title(title=f"New score by {username}!")
-					webhook.set_desc("[{}] Achieved #1 on mode **{}**, {} +{}!".format(DAGAyMode, gameModes.getGamemodeFull(s.gameMode), beatmapInfo.songName.encode().decode("ASCII", "ignore"), ScoreMods))
-					webhook.add_field(name='Total: {}pp'.format(float("{0:.2f}".format(s.pp))), value='Gained: +{}pp'.format(float("{0:.2f}".format(ppGained))))
-					webhook.add_field(name='Actual rank: {}'.format(rankInfo["currentRank"]), value='[Download Link](https://storage.ripple.moe/d/{})'.format(beatmapInfo.beatmapSetID))
-					webhook.add_field(name='Played by: {}'.format(username.encode().decode("ASCII", "ignore")), value="[Go to user's profile](https://ussr.pl/{}u/{})".format(ProfAppend, userID))
-					webhook.set_image('https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(beatmapInfo.beatmapSetID))
-					webhook.post()
+						# Then post them!
+						webhook = Webhook(url, color=0xadd8e6, footer="This score is submitted on RealistikOsu!")
+						webhook.set_author(name=username.encode().decode("ASCII", "ignore"), icon='https://a.ussr.pl/{}'.format(userID))
+						webhook.set_title(title=f"New score by {username}!")
+						webhook.set_desc("[{}] Achieved #1 on mode **{}**, {} +{}!".format(DAGAyMode, gameModes.getGamemodeFull(s.gameMode), beatmapInfo.songName.encode().decode("ASCII", "ignore"), ScoreMods))
+						webhook.add_field(name='Total: {}pp'.format(float("{0:.2f}".format(s.pp))), value='Gained: +{}pp'.format(float("{0:.2f}".format(ppGained))))
+						webhook.add_field(name='Actual rank: {}'.format(rankInfo["currentRank"]), value='[Download Link](https://storage.ripple.moe/d/{})'.format(beatmapInfo.beatmapSetID))
+						webhook.add_field(name='Played by: {}'.format(username.encode().decode("ASCII", "ignore")), value="[Go to user's profile](https://ussr.pl/{}u/{})".format(ProfAppend, userID))
+						webhook.set_image('https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(beatmapInfo.beatmapSetID))
+						webhook.post()
 
 				# Write message to client
 				self.write(output)
