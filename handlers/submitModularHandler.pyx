@@ -621,7 +621,7 @@ class handler(requestsManager.asyncRequestHandler):
 					else:
 						DAGAyMode = "VANILLA"
 						ProfAppend = ""
-					annmsg = "[{}] [{}/{}u/{} {}] achieved rank #1 on [https://osu.ppy.sh/b/{} {}] ({})".format(
+					annmsg = "[{}] [{}/{}u/{} {}] achieved rank #1 on [https://ussr.pl/b/{} {}] ({})".format(
 						DAGAyMode,
 						glob.conf.config["server"]["serverurl"],
 						ProfAppend,
