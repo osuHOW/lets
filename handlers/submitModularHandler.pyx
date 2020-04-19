@@ -478,6 +478,9 @@ class handler(requestsManager.asyncRequestHandler):
 					if UsingRelax:
 						leaderboardHelperRelax.update(userID, newUserStats["pp"], s.gameMode)
 						leaderboardHelperRelax.updateCountry(userID, newUserStats["pp"], s.gameMode)
+					if UsingAutopilot:
+						leaderboardHelperAuto.update(userID, newUserStats["pp"], s.gameMode)
+						leaderboardHelperAuto.updateCountry(userID, newUserStats["pp"], s.gameMode)
 					else:
 						leaderboardHelper.update(userID, newUserStats["pp"], s.gameMode)
 						leaderboardHelper.updateCountry(userID, newUserStats["pp"], s.gameMode)
@@ -539,7 +542,7 @@ class handler(requestsManager.asyncRequestHandler):
 				# Get rank info (current rank, pp/score to next rank, user who is 1 rank above us)
 				if bool(s.mods & 128):
 					rankInfo = leaderboardHelperRelax.getRankInfo(userID, s.gameMode)
-				if UsingAutopilot:
+				if bool(s.mods & 8192):
 					rankInfo = leaderboardHelperAuto.getRankInfo(userID, s.gameMode)
 				else:
 					rankInfo = leaderboardHelper.getRankInfo(userID, s.gameMode)
