@@ -520,6 +520,8 @@ class handler(requestsManager.asyncRequestHandler):
 				# Get personal best after submitting the score
 				if UsingRelax:
 					newScoreboard = scoreboardRelax.scoreboardRelax(username, s.gameMode, beatmapInfo, False)
+				if UsingAutopilot:
+					newScoreboard = scoreboardAuto.scoreboardAuto(username, s.gameMode, beatmapInfo, False)
 				else:
 					newScoreboard = scoreboard.scoreboard(username, s.gameMode, beatmapInfo, False)
 
@@ -529,6 +531,8 @@ class handler(requestsManager.asyncRequestHandler):
 					
 				if UsingRelax:
 					currentPersonalBest = scoreRelax.score(personalBestID, newScoreboard.personalBestRank)
+				if UsingAutopilot:
+					currentPersonalBest = scoreAuto.score(personalBestID, newScoreboard.personalBestRank)
 				else:
 					currentPersonalBest = score.score(personalBestID, newScoreboard.personalBestRank)
 
