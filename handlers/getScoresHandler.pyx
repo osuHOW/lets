@@ -100,7 +100,7 @@ class handler(requestsManager.asyncRequestHandler):
 					sboard = scoreboardRelax.scoreboardRelax(
 					username, gameMode, bmap, setScores=True, country=country, mods=modsFilter, friends=friends
 					)
-			if bool(mods & 8192):
+			elif bool(mods & 8192):
 				sboard = scoreboardAuto.scoreboardAuto(
 					username, gameMode, bmap, setScores=True, country=country, mods=modsFilter, friends=friends
 				)
