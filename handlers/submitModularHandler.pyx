@@ -535,6 +535,8 @@ class handler(requestsManager.asyncRequestHandler):
 				# Get rank info (current rank, pp/score to next rank, user who is 1 rank above us)
 				if bool(s.mods & 128):
 					rankInfo = leaderboardHelperRelax.getRankInfo(userID, s.gameMode)
+				if UsingAutopilot:
+					rankInfo = leaderboardHelperAuto.getRankInfo(userID, s.gameMode)
 				else:
 					rankInfo = leaderboardHelper.getRankInfo(userID, s.gameMode)
 
