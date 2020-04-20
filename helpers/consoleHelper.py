@@ -23,7 +23,7 @@ def printServerStartHeader(asciiArt):
 		printColored("| |__ | _|   | |  \\__ \\  ", DaColour)
 		printColored("|____||___|  |_|  |___/  \n", DaColour)
 
-	printColored("> Welcome to the Latest Essential Tatoe Server (RealistikOsu! ver)", bcolors.GREEN)
+	printColored("> Welcome to the Latest Essential Tatoe Server {} (RealistikOsu! ver)".format(glob.VERSION), bcolors.GREEN)
 	printColored("> Common submodule v{}".format(glob.COMMON_VERSION), bcolors.GREEN)
 	printColored("> Forked by RealistikOsu!", bcolors.GREEN)
 	printColored("> Made by the Ripple team", bcolors.GREEN)
