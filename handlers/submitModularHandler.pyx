@@ -300,9 +300,9 @@ class handler(requestsManager.asyncRequestHandler):
 						if glob.conf.config["discord"]["enable"]:
 							webhook = Webhook(glob.conf.config["discord"]["ahook"],
 											  color=0xadd836,
-											  footer="Man... this is worst player. [ Client AC ]")
-							webhook.set_title(title=f"Catched some cheater {username} ({userID})")
-							webhook.set_desc(f'This body catched with flag {haxFlags}\nIn enuming: {hack}')
+											  footer="I SPOT A THOT. [ Client AC ]")
+							webhook.set_title(title=f"Caught some cheater {username} ({userID})")
+							webhook.set_desc(f'This body caught with flag {haxFlags}\nIn enuming: {hack}')
 							webhook.post()
 
 			'''
