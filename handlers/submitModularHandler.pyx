@@ -150,6 +150,16 @@ class handler(requestsManager.asyncRequestHandler):
 			UsingRelax = used_mods & 128
 			UsingAutopilot = used_mods & 8192
 
+			if UsingRelax:
+				DAGAyMode = "RELAX"
+				ProfAppend = "rx/"
+			elif UsingAutopilot:
+				DAGAyMode = "AUTOPILOT"
+				ProfAppend = "ap/"
+			else:
+				DAGAyMode = "VANILLA"
+				ProfAppend = ""
+
 			# Create score object and set its data
 			if UsingRelax:
 				log.info("[RELAX] {} has submitted a score on {}...".format(username, scoreData[0]))
@@ -612,15 +622,6 @@ class handler(requestsManager.asyncRequestHandler):
 
 				# Send message to #announce if we're rank #1
 				if newScoreboard.personalBestRank == 1 and s.completed == 3 and not restricted:
-					if UsingRelax:
-						DAGAyMode = "RELAX"
-						ProfAppend = "rx/"
-					elif UsingAutopilot:
-						DAGAyMode = "AUTOPILOT"
-						ProfAppend = "ap/"
-					else:
-						DAGAyMode = "VANILLA"
-						ProfAppend = ""
 					annmsg = "[{}] [{}/{}u/{} {}] achieved rank #1 on [https://ussr.pl/b/{} {}] ({})".format(
 						DAGAyMode,
 						glob.conf.config["server"]["serverurl"],
@@ -637,7 +638,7 @@ class handler(requestsManager.asyncRequestHandler):
 
 					# Let's send them to Discord too, because we cool :sunglasses:
 					
-
+					#around wheer it dies
 					if glob.conf.config["discord"]["enable"]:
 						# First, let's check what mod does the play have
 						ScoreMods = ""
