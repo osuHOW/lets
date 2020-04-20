@@ -16,4 +16,4 @@
 	branch = cython
 [submodule "pp/oppai-ap"]
 	path = pp/oppai-ap
-	url = https://github.com/RealistikOsu/ap-pp
+	url = https://github.com/RealistikOsu/ap-pp.git
