@@ -615,7 +615,7 @@ class handler(requestsManager.asyncRequestHandler):
 					if UsingRelax:
 						DAGAyMode = "RELAX"
 						ProfAppend = "rx/"
-					if UsingAutopilot:
+					elif UsingAutopilot:
 						DAGAyMode = "AUTOPILOT"
 						ProfAppend = "ap/"
 					else:
