@@ -14,3 +14,6 @@
 [submodule "pp/oppai-ap"]
 	path = pp/oppai-ap
 	url = https://github.com/RealistikOsu/ap-pp.git
+[submodule "pp/oppai-rx"]
+	path = pp/oppai-rx
+	url = https://github.com/light-ripple/akatsuki-pp-relax.git
