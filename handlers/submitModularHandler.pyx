@@ -153,17 +153,13 @@ class handler(requestsManager.asyncRequestHandler):
 			# Create score object and set its data
 			if UsingRelax:
 				log.info("[RELAX] {} has submitted a score on {}...".format(username, scoreData[0]))
-			elif UsingAutopilot:
-				log.info("[AUTOPILOT] {} has submitted a score on {}...".format(username, scoreData[0]))
-			else:
-				log.info("[VANILLA] {} has submitted a score on {}...".format(username, scoreData[0]))
-			
-			if UsingRelax:
 				s = scoreRelax.score()
 			elif UsingAutopilot:
 				s = scoreAuto.score()
+				log.info("[AUTOPILOT] {} has submitted a score on {}...".format(username, scoreData[0]))
 			else:
 				s = score.score()
+				log.info("[VANILLA] {} has submitted a score on {}...".format(username, scoreData[0]))
 			s.setDataFromScoreData(scoreData, quit_=quit_, failed=failed)
 			s.playerUserID = userID
 
@@ -258,25 +254,24 @@ class handler(requestsManager.asyncRequestHandler):
 			if s.passed and s.oldPersonalBest > 0:
 				if UsingRelax:
 					oldPersonalBestRank = glob.personalBestCacheRX.get(userID, s.fileMd5)
-				elif UsingAutopilot:
-					oldPersonalBestRank = glob.personalBestCacheAP.get(userID, s.fileMd5)
-				else:
-					oldPersonalBestRank = glob.personalBestCache.get(userID, s.fileMd5)
-				if oldPersonalBestRank == 0:
-					# oldPersonalBestRank not found in cache, get it from db through a scoreboard object
-					if UsingRelax:
+					if oldPersonalBestRank == 0:
 						oldScoreboard = scoreboardRelax.scoreboardRelax(username, s.gameMode, beatmapInfo, False)
-					elif UsingAutopilot:
-						oldScoreboard = scoreboardAuto.scoreboardAuto(username, s.gameMode, beatmapInfo, False)
-					else:
-						oldScoreboard = scoreboard.scoreboard(username, s.gameMode, beatmapInfo, False)
-					oldScoreboard.setPersonalBestRank()
-					oldPersonalBestRank = max(oldScoreboard.personalBestRank, 0)
-				if UsingRelax:
+						oldScoreboard.setPersonalBestRank()
+						oldPersonalBestRank = max(oldScoreboard.personalBestRank, 0)
 					oldPersonalBest = scoreRelax.score(s.oldPersonalBest, oldPersonalBestRank)
 				elif UsingAutopilot:
+					oldPersonalBestRank = glob.personalBestCacheAP.get(userID, s.fileMd5)
+					if oldPersonalBest == 0:
+						oldScoreboard = scoreboardAuto.scoreboardAuto(username, s.gameMode, beatmapInfo, False)
+						oldScoreboard.setPersonalBestRank()
+						oldPersonalBestRank = max(oldScoreboard.personalBestRank, 0)
 					oldPersonalBest = scoreAuto.score(s.oldPersonalBest, oldPersonalBestRank)
 				else:
+					oldPersonalBestRank = glob.personalBestCache.get(userID, s.fileMd5)
+					if oldPersonalBest == 0:
+						oldScoreboard = scoreboard.scoreboard(username, s.gameMode, beatmapInfo, False)
+						oldScoreboard.setPersonalBestRank()
+						oldPersonalBestRank = max(oldScoreboard.personalBestRank, 0)
 					oldPersonalBest = score.score(s.oldPersonalBest, oldPersonalBestRank)
 			else:
 				oldPersonalBestRank = 0
@@ -615,7 +610,7 @@ class handler(requestsManager.asyncRequestHandler):
 					if UsingRelax:
 						DAGAyMode = "RELAX"
 						ProfAppend = "rx/"
-					if UsingAutopilot:
+					elif UsingAutopilot:
 						DAGAyMode = "AUTOPILOT"
 						ProfAppend = "ap/"
 					else:
