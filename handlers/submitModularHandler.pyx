@@ -258,9 +258,6 @@ class handler(requestsManager.asyncRequestHandler):
 						oldScoreboard = scoreboardRelax.scoreboardRelax(username, s.gameMode, beatmapInfo, False)
 						oldScoreboard.setPersonalBestRank()
 						oldPersonalBestRank = max(oldScoreboard.personalBestRank, 0)
-					else:
-						oldPersonalBestRank = 0
-						oldPersonalBest = None
 					oldPersonalBest = scoreRelax.score(s.oldPersonalBest, oldPersonalBestRank)
 				elif UsingAutopilot:
 					oldPersonalBestRank = glob.personalBestCacheAP.get(userID, s.fileMd5)
@@ -268,9 +265,6 @@ class handler(requestsManager.asyncRequestHandler):
 						oldScoreboard = scoreboardAuto.scoreboardAuto(username, s.gameMode, beatmapInfo, False)
 						oldScoreboard.setPersonalBestRank()
 						oldPersonalBestRank = max(oldScoreboard.personalBestRank, 0)
-					else:
-						oldPersonalBestRank = 0
-						oldPersonalBest = None
 					oldPersonalBest = scoreAuto.score(s.oldPersonalBest, oldPersonalBestRank)
 				else:
 					oldPersonalBestRank = glob.personalBestCache.get(userID, s.fileMd5)
@@ -278,10 +272,10 @@ class handler(requestsManager.asyncRequestHandler):
 						oldScoreboard = scoreboard.scoreboard(username, s.gameMode, beatmapInfo, False)
 						oldScoreboard.setPersonalBestRank()
 						oldPersonalBestRank = max(oldScoreboard.personalBestRank, 0)
-					else:
-						oldPersonalBestRank = 0
-						oldPersonalBest = None
 					oldPersonalBest = score.score(s.oldPersonalBest, oldPersonalBestRank)
+			else:
+				oldPersonalBestRank = 0
+				oldPersonalBest = None
 			
 			# Save score in db
 			s.saveScoreInDB()
