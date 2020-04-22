@@ -639,6 +639,7 @@ class handler(requestsManager.asyncRequestHandler):
 					# Let's send them to Discord too, because we cool :sunglasses:
 					
 					#around wheer it dies
+					"""
 					if glob.conf.config["discord"]["enable"]:
 						# First, let's check what mod does the play have
 						ScoreMods = ""
@@ -682,13 +683,14 @@ class handler(requestsManager.asyncRequestHandler):
 						webhook.add_field(name='Played by: {}'.format(username.encode().decode("ASCII", "ignore")), value="[Go to user's profile](https://ussr.pl/{}u/{})".format(ProfAppend, userID))
 						webhook.set_image('https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(beatmapInfo.beatmapSetID))
 						webhook.post()
+					"""
 
 				# Write message to client
 				self.write(output)
 			else:
 				# No ranking panel, send just "ok"
 				self.write("ok")
-
+			
 			# Send username change request to bancho if needed
 			# (key is deleted bancho-side)
 			newUsername = glob.redis.get("ripple:change_username_pending:{}".format(userID))
