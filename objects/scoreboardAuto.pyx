@@ -1,4 +1,4 @@
-from objects import score
+from objects import scoreAuto
 from common.ripple import userUtils
 from constants import rankedStatuses
 from common.constants import mods as modsEnum
@@ -6,7 +6,7 @@ from objects import glob
 from objects import beatmap
 
 
-class scoreboard:
+class scoreboardAuto:
 	def __init__(self, username, gameMode, beatmap, setScores = True, country = False, friends = False, mods = -1):
 		"""
 		Initialize a leaderboard object
@@ -14,7 +14,7 @@ class scoreboard:
 		username -- username of who's requesting the scoreboard. None if not known
 		gameMode -- requested gameMode
 		beatmap -- beatmap objecy relative to this leaderboard
-		setScores -- if True, will get personal/top 50 scores automatically. Optional. Default: True
+		setScores -- if True, will get personal/top 50 auto scores automatically. Optional. Default: True
 		"""
 		self.scores = []				# list containing all top 50 scores objects. First object is personal best
 		self.totalScores = 0
@@ -26,12 +26,11 @@ class scoreboard:
 		self.country = country
 		self.friends = friends
 		self.mods = mods
-		self.relax = 0
-		self.autopilot = 0
-		self.ppboard = 0
+		self.Auto = 1
+		self.ppboard = 1
 		if glob.conf.extra["lets"]["submit"]["loved-dont-give-pp"] and beatmap.rankedStatus == 5:
 			self.ppboard = 0
-		elif userUtils.PPBoard(self.userID, self.relax) == 1:
+		elif userUtils.PPBoard(self.userID, self.Auto) == 1:
 			self.ppboard = 1
 		else:
 			self.ppboard = 0
@@ -54,7 +53,7 @@ class scoreboard:
 		cdef str friends = ""
 		cdef str order = ""
 		cdef str limit = ""
-		select = "SELECT id FROM scores WHERE userid = %(userid)s AND beatmap_md5 = %(md5)s AND play_mode = %(mode)s AND completed = 3"
+		select = "SELECT id FROM scores_ap WHERE userid = %(userid)s AND beatmap_md5 = %(md5)s AND play_mode = %(mode)s AND completed = 3"
 
 		# Mods
 		if self.mods > -1:
@@ -62,7 +61,7 @@ class scoreboard:
 
 		# Friends ranking
 		if self.friends:
-			friends = "AND (scores.userid IN (SELECT user2 FROM users_relationships WHERE user1 = %(userid)s) OR scores.userid = %(userid)s)"
+			friends = "AND (scores_ap.userid IN (SELECT user2 FROM users_relationships WHERE user1 = %(userid)s) OR scores_ap.userid = %(userid)s)"
 
 		# Sort and limit at the end
 		order = "ORDER BY score DESC"
@@ -103,7 +102,7 @@ class scoreboard:
 
 		# Output our personal best if found
 		if personalBestScore is not None:
-			s = score.score(personalBestScore)
+			s = scoreAuto.score(personalBestScore)
 			self.scores[0] = s
 		else:
 			# No personal best
@@ -111,7 +110,7 @@ class scoreboard:
 
 		# Get top 50 scores
 		select = "SELECT *"
-		joins = "FROM scores STRAIGHT_JOIN users ON scores.userid = users.id STRAIGHT_JOIN users_stats ON users.id = users_stats.id WHERE scores.beatmap_md5 = %(beatmap_md5)s AND scores.play_mode = %(play_mode)s AND scores.completed = 3 AND (users.privileges & 1 > 0 OR users.id = %(userid)s)"
+		joins = "FROM scores_ap STRAIGHT_JOIN users ON scores_ap.userid = users.id STRAIGHT_JOIN users_stats ON users.id = users_stats.id WHERE scores_ap.beatmap_md5 = %(beatmap_md5)s AND scores_ap.play_mode = %(play_mode)s AND scores_ap.completed = 3 AND (users.privileges & 1 > 0 OR users.id = %(userid)s)"
 
 		# Country ranking
 		if self.country:
@@ -121,13 +120,13 @@ class scoreboard:
 
 		# Mods ranking (ignore auto, since we use it for pp sorting)
 		if self.mods > -1 and self.mods & modsEnum.AUTOPLAY == 0:
-			mods = "AND scores.mods = %(mods)s"
+			mods = "AND scores_ap.mods = %(mods)s"
 		else:
 			mods = ""
 
 		# Friends ranking
 		if self.friends:
-			friends = "AND (scores.userid IN (SELECT user2 FROM users_relationships WHERE user1 = %(userid)s) OR scores.userid = %(userid)s)"
+			friends = "AND (scores_ap.userid IN (SELECT user2 FROM users_relationships WHERE user1 = %(userid)s) OR scores_ap.userid = %(userid)s)"
 		else:
 			friends = ""
 
@@ -151,7 +150,7 @@ class scoreboard:
 		if topScores is not None:
 			for topScore in topScores:
 				# Create score object
-				s = score.score(topScore["id"], setData=False)
+				s = scoreAuto.score(topScore["id"], setData=False)
 
 				# Set data and rank from topScores's row
 				s.setDataFromDict(topScore)
@@ -163,7 +162,7 @@ class scoreboard:
 
 				# Add this score to scores list and increment rank
 				self.scores.append(s)
-				c+=1
+				c += 1
 
 		'''# If we have more than 50 scores, run query to get scores count
 		if c >= 50:
@@ -200,13 +199,13 @@ class scoreboard:
 		Ikr, that query is HUGE but xd
 		"""
 		# Before running the HUGE query, make sure we have a score on that map
-		cdef str query = "SELECT id FROM scores WHERE beatmap_md5 = %(md5)s AND userid = %(userid)s AND play_mode = %(mode)s AND completed = 3"
+		cdef str query = "SELECT id FROM scores_ap WHERE beatmap_md5 = %(md5)s AND userid = %(userid)s AND play_mode = %(mode)s AND completed = 3"
 		# Mods
 		if self.mods > -1:
-			query += " AND scores.mods = %(mods)s"
+			query += " AND scores_ap.mods = %(mods)s"
 		# Friends ranking
 		if self.friends:
-			query += " AND (scores.userid IN (SELECT user2 FROM users_relationships WHERE user1 = %(userid)s) OR scores.userid = %(userid)s)"
+			query += " AND (scores_ap.userid IN (SELECT user2 FROM users_relationships WHERE user1 = %(userid)s) OR scores_ap.userid = %(userid)s)"
 		# Sort and limit at the end
 		query += " LIMIT 1"
 		hasScore = glob.db.fetch(query, {"md5": self.beatmap.fileMD5, "userid": self.userID, "mode": self.gameMode, "mods": self.mods})
@@ -214,21 +213,21 @@ class scoreboard:
 			return
 
 		overwrite = self.ppboard and "pp" or "score"
-		
+		#rel was her
 		# We have a score, run the huge query
 		# Base query
-		query = """SELECT COUNT(*) AS rank FROM scores STRAIGHT_JOIN users ON scores.userid = users.id STRAIGHT_JOIN users_stats ON users.id = users_stats.id WHERE scores.{0} >= (
-		SELECT {0} FROM scores WHERE beatmap_md5 = %(md5)s AND play_mode = %(mode)s AND completed = 3 AND userid = %(userid)s LIMIT 1
-		) AND scores.beatmap_md5 = %(md5)s AND scores.play_mode = %(mode)s AND scores.completed = 3 AND users.privileges & 1 > 0""".format(overwrite)
+		query = """SELECT COUNT(*) AS rank FROM scores_ap STRAIGHT_JOIN users ON scores_ap.userid = users.id STRAIGHT_JOIN users_stats ON users.id = users_stats.id WHERE scores_ap.{0} >= (
+		SELECT {0} FROM scores_ap WHERE beatmap_md5 = %(md5)s AND play_mode = %(mode)s AND completed = 3 AND userid = %(userid)s LIMIT 1
+		) AND scores_ap.beatmap_md5 = %(md5)s AND scores_ap.play_mode = %(mode)s AND scores_ap.completed = 3 AND users.privileges & 1 > 0""".format(overwrite)
 		# Country
 		if self.country:
 			query += " AND users_stats.country = (SELECT country FROM users_stats WHERE id = %(userid)s LIMIT 1)"
 		# Mods
 		if self.mods > -1:
-			query += " AND scores.mods = %(mods)s"
+			query += " AND scores_ap.mods = %(mods)s"
 		# Friends
 		if self.friends:
-			query += " AND (scores.userid IN (SELECT user2 FROM users_relationships WHERE user1 = %(userid)s) OR scores.userid = %(userid)s)"
+			query += " AND (scores_ap.userid IN (SELECT user2 FROM users_relationships WHERE user1 = %(userid)s) OR scores_ap.userid = %(userid)s)"
 		# Sort and limit at the end
 		query += " ORDER BY {} DESC LIMIT 1".format(overwrite)
 		result = glob.db.fetch(query, {"md5": self.beatmap.fileMD5, "userid": self.userID, "mode": self.gameMode, "mods": self.mods})

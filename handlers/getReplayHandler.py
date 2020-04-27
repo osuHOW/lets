@@ -51,9 +51,18 @@ class handler(requestsManager.asyncRequestHandler):
 			replayData = glob.db.fetch("SELECT scores.*, users.username AS uname FROM scores LEFT JOIN users ON scores.userid = users.id WHERE scores.id = %s", [replayID])
 			if replayData == None:
 				replayData = glob.db.fetch("SELECT scores_relax.*, users.username AS uname FROM scores_relax LEFT JOIN users ON scores_relax.userid = users.id WHERE scores_relax.id = %s", [replayID])
-				fileName = "{}_relax/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], replayID)
-				UsingRelax = True
+				if replayData == None:
+					replayData = glob.db.fetch("SELECT scores_ap.*, users.username AS uname FROM scores_ap LEFT JOIN users ON scores_ap.userid = users.id WHERE scores_ap.id = %s", [replayID])
+					UsingRelax = False
+					UsingAuto = True
+					fileName = "{}_ap/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], replayID)
+				else:
+					fileName = "{}_relax/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], replayID)
+					UsingRelax = True
+					UsingAuto = False
 			else:
+				UsingRelax = False
+				UsingAuto = False
 				fileName = "{}/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], replayID)
 
 			# Increment 'replays watched by others' if needed
@@ -61,8 +70,13 @@ class handler(requestsManager.asyncRequestHandler):
 				if username != replayData["uname"]:
 					userUtils.incrementReplaysWatched(replayData["userid"], replayData["play_mode"])
 
+			Play = "VANILLA"
+			if UsingRelax:
+				Play = "RELAX"
+			if UsingAuto:
+				Play = "AUTOPILOT"
 			# Serve replay
-			log.info("[{}] Serving replay_{}.osr".format("RELAX" if UsingRelax else "VANILLA", replayID))
+			log.info("[{}] Serving replay_{}.osr".format(Play, replayID))
 
 			if os.path.isfile(fileName):
 				with open(fileName, "rb") as f:

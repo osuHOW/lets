@@ -2,6 +2,7 @@
 
 from common.constants import bcolors
 from objects import glob
+import random
 
 
 def printServerStartHeader(asciiArt):
@@ -12,19 +13,21 @@ def printServerStartHeader(asciiArt):
 	"""
 
 	if asciiArt:
-		printColored(" (                 (     ", bcolors.YELLOW)
-		printColored(" )\\ )        *   ) )\\ )  ", bcolors.YELLOW)
-		printColored("(()/(  (   ` )  /((()/(  ", bcolors.YELLOW)
-		printColored(" /(_)) )\\   ( )(_))/(_)) ", bcolors.YELLOW)
-		printColored("(_))  ((_) (_(_())(_))   ", bcolors.YELLOW)
-		printColored("| |   | __||_   _|/ __|  ", bcolors.GREEN)
-		printColored("| |__ | _|   | |  \\__ \\  ", bcolors.GREEN)
-		printColored("|____||___|  |_|  |___/  \n", bcolors.GREEN)
+		DaColour = random.choice([bcolors.BLUE, bcolors.YELLOW, bcolors.PINK, bcolors.RED, bcolors.GREEN])
+		printColored(" (                 (     ", DaColour)
+		printColored(" )\\ )        *   ) )\\ )  ", DaColour)
+		printColored("(()/(  (   ` )  /((()/(  ", DaColour)
+		printColored(" /(_)) )\\   ( )(_))/(_)) ", DaColour)
+		printColored("(_))  ((_) (_(_())(_))   ", DaColour)
+		printColored("| |   | __||_   _|/ __|  ", DaColour)
+		printColored("| |__ | _|   | |  \\__ \\  ", DaColour)
+		printColored("|____||___|  |_|  |___/  \n", DaColour)
 
-	printColored("> Welcome to the Latest Essential Tatoe Server {}".format(glob.VERSION), bcolors.GREEN)
+	printColored("> Welcome to the Latest Essential Tatoe Server (RealistikOsu! ver)", bcolors.GREEN)
 	printColored("> Common submodule v{}".format(glob.COMMON_VERSION), bcolors.GREEN)
+	printColored("> Forked by RealistikOsu!", bcolors.GREEN)
 	printColored("> Made by the Ripple team", bcolors.GREEN)
-	printColored("> {}https://zxq.co/ripple/lets".format(bcolors.UNDERLINE), bcolors.GREEN)
+	printColored("> {}https://github.com/RealistikOsu/lets".format(bcolors.UNDERLINE), bcolors.GREEN)
 	printColored("> Press CTRL+C to exit\n", bcolors.GREEN)
 
 
