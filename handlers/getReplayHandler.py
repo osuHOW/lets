@@ -70,8 +70,13 @@ class handler(requestsManager.asyncRequestHandler):
 				if username != replayData["uname"]:
 					userUtils.incrementReplaysWatched(replayData["userid"], replayData["play_mode"])
 
+			Play = "VANILLA"
+			if UsingRelax:
+				Play = "RELAX"
+			if UsingAuto:
+				Play = "AUTOPILOT"
 			# Serve replay
-			log.info("[{}] Serving replay_{}.osr".format("RELAX" if UsingRelax else "VANILLA", replayID))
+			log.info("[{}] Serving replay_{}.osr".format(Play, replayID))
 
 			if os.path.isfile(fileName):
 				with open(fileName, "rb") as f:
