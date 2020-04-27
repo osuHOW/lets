@@ -27,7 +27,7 @@ def printServerStartHeader(asciiArt):
 	printColored("> Common submodule v{}".format(glob.COMMON_VERSION), bcolors.GREEN)
 	printColored("> Forked by RealistikOsu!", bcolors.GREEN)
 	printColored("> Made by the Ripple team", bcolors.GREEN)
-	printColored("> {}https://github.com/RealistikOsu/LETS".format(bcolors.UNDERLINE), bcolors.GREEN)
+	printColored("> {}https://github.com/RealistikOsu/lets".format(bcolors.UNDERLINE), bcolors.GREEN)
 	printColored("> Press CTRL+C to exit\n", bcolors.GREEN)
 
 

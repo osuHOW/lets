@@ -538,10 +538,10 @@ class handler(requestsManager.asyncRequestHandler):
 				personalBestID = newScoreboard.getPersonalBest()
 				assert personalBestID is not None
 				# Get rank info (current rank, pp/score to next rank, user who is 1 rank above us)
-				if bool(s.mods & 128):
+				if UsingRelax:
 					rankInfo = leaderboardHelperRelax.getRankInfo(userID, s.gameMode)
 					currentPersonalBest = scoreRelax.score(personalBestID, newScoreboard.personalBestRank)
-				if bool(s.mods & 8192):
+				if UsingAutopilot:
 					rankInfo = leaderboardHelperAuto.getRankInfo(userID, s.gameMode)
 					currentPersonalBest = scoreAuto.score(personalBestID, newScoreboard.personalBestRank)
 				else:
