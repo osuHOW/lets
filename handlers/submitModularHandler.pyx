@@ -638,8 +638,6 @@ class handler(requestsManager.asyncRequestHandler):
 
 					# Let's send them to Discord too, because we cool :sunglasses:
 					
-					#around wheer it dies
-					"""
 					if glob.conf.config["discord"]["enable"]:
 						# First, let's check what mod does the play have
 						ScoreMods = ""
@@ -667,14 +665,9 @@ class handler(requestsManager.asyncRequestHandler):
 							ScoreMods += "RX"
 						if s.mods & mods.RELAX2 > 0:
 							ScoreMods += "AP"
-						# Second, get the webhook link from config
-						if UsingRelax or UsingAutopilot: #wont differ them
-							url = glob.conf.config["discord"]["rxscore"]
-						else:
-							url = glob.conf.config["discord"]["score"]
 
 						# Then post them!
-						webhook = Webhook(url, color=0xadd8e6, footer="This score is submitted on RealistikOsu!")
+						webhook = Webhook(glob.conf.config["discord"]["score"], color=0xadd8e6, footer="This score is submitted on RealistikOsu!")
 						webhook.set_author(name=username.encode().decode("ASCII", "ignore"), icon='https://a.ussr.pl/{}'.format(userID))
 						webhook.set_title(title=f"New score by {username}!")
 						webhook.set_desc("[{}] Achieved #1 on mode **{}**, {} +{}!".format(DAGAyMode, gameModes.getGamemodeFull(s.gameMode), beatmapInfo.songName.encode().decode("ASCII", "ignore"), ScoreMods))
@@ -683,7 +676,6 @@ class handler(requestsManager.asyncRequestHandler):
 						webhook.add_field(name='Played by: {}'.format(username.encode().decode("ASCII", "ignore")), value="[Go to user's profile](https://ussr.pl/{}u/{})".format(ProfAppend, userID))
 						webhook.set_image('https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(beatmapInfo.beatmapSetID))
 						webhook.post()
-					"""
 
 				# Write message to client
 				self.write(output)
