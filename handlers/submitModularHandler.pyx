@@ -231,7 +231,8 @@ class handler(requestsManager.asyncRequestHandler):
 
 			# Restrict obvious cheaters
 			if not restricted:
-				rx_pp = glob.conf.extra["lets"]["submit"]["max-std-pp"]
+				rx_pp = glob.conf.extra["lets"]["submit"]["max-rx-pp"]
+				ap_pp = glob.conf.extra["lets"]["submit"]["max-ap-pp"]
 				oof_pp = glob.conf.extra["lets"]["submit"]["max-vanilla-pp"]
 				
 				relax = 1 if used_mods & 128 else 0
@@ -241,8 +242,13 @@ class handler(requestsManager.asyncRequestHandler):
 				else:
 					unrestricted_user = userUtils.noPPLimit(userID, relax)
 				
-				if UsingRelax or UsingAutopilot: 
+				if UsingRelax: 
 					if (s.pp >= rx_pp and s.gameMode == gameModes.STD) and not unrestricted_user and not glob.conf.extra["mode"]["no-pp-cap"]:
+						userUtils.restrict(userID)
+						userUtils.appendNotes(userID, "Restricted due to too high pp gain ({}pp)".format(s.pp))
+						log.warning("**{}** ({}) has been restricted due to too high pp gain **({}pp)**".format(username, userID, s.pp), "cm")
+				if UsingAutopilot:
+					if (s.pp >= ap_pp and s.gameMode == gameModes.STD) and not unrestricted_user and not glob.conf.extra["mode"]["no-pp-cap"]:
 						userUtils.restrict(userID)
 						userUtils.appendNotes(userID, "Restricted due to too high pp gain ({}pp)".format(s.pp))
 						log.warning("**{}** ({}) has been restricted due to too high pp gain **({}pp)**".format(username, userID, s.pp), "cm")
