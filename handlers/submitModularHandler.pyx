@@ -163,17 +163,14 @@ class handler(requestsManager.asyncRequestHandler):
 			# Create score object and set its data
 			if UsingRelax:
 				log.info("[RELAX] {} has submitted a score on {}...".format(username, scoreData[0]))
-			elif UsingAutopilot:
-				log.info("[AUTOPILOT] {} has submitted a score on {}...".format(username, scoreData[0]))
-			else:
-				log.info("[VANILLA] {} has submitted a score on {}...".format(username, scoreData[0]))
-			
-			if UsingRelax:
 				s = scoreRelax.score()
 			elif UsingAutopilot:
+				log.info("[AUTOPILOT] {} has submitted a score on {}...".format(username, scoreData[0]))
 				s = scoreAuto.score()
 			else:
+				log.info("[VANILLA] {} has submitted a score on {}...".format(username, scoreData[0]))
 				s = score.score()
+
 			s.setDataFromScoreData(scoreData, quit_=quit_, failed=failed)
 			s.playerUserID = userID
 
@@ -237,10 +234,7 @@ class handler(requestsManager.asyncRequestHandler):
 				
 				relax = 1 if used_mods & 128 else 0
 				
-				if UsingAutopilot:
-					unrestricted_user = userUtils.noPPLimitAP(userID)
-				else:
-					unrestricted_user = userUtils.noPPLimit(userID, relax)
+				unrestricted_user = userUtils.noPPLimit(userID, relax)
 				
 				if UsingRelax: 
 					if (s.pp >= rx_pp and s.gameMode == gameModes.STD) and not unrestricted_user and not glob.conf.extra["mode"]["no-pp-cap"]:
@@ -248,6 +242,7 @@ class handler(requestsManager.asyncRequestHandler):
 						userUtils.appendNotes(userID, "Restricted due to too high pp gain ({}pp)".format(s.pp))
 						log.warning("**{}** ({}) has been restricted due to too high pp gain **({}pp)**".format(username, userID, s.pp), "cm")
 				elif UsingAutopilot:
+					unrestricted_user = userUtils.noPPLimitAP(userID)
 					if (s.pp >= ap_pp and s.gameMode == gameModes.STD) and not unrestricted_user and not glob.conf.extra["mode"]["no-pp-cap"]:
 						userUtils.restrict(userID)
 						userUtils.appendNotes(userID, "Restricted due to too high pp gain ({}pp)".format(s.pp))
@@ -418,11 +413,11 @@ class handler(requestsManager.asyncRequestHandler):
 				else:
 					# Restrict if no replay was provided
 					if not restricted:
-							userUtils.restrict(userID)
-							userUtils.appendNotes(userID, "Restricted due to missing replay while submitting a score.")
-							log.warning("**{}** ({}) has been restricted due to not submitting a replay on map {}.".format(
-								username, userID, s.fileMd5
-							), "cm")
+						userUtils.restrict(userID)
+						userUtils.appendNotes(userID, "Restricted due to missing replay while submitting a score.")
+						log.warning("**{}** ({}) has been restricted due to not submitting a replay on map {}.".format(
+							username, userID, s.fileMd5
+						), "cm")
 
 			# Update beatmap playcount (and passcount)
 			beatmap.incrementPlaycount(s.fileMd5, s.passed)
