@@ -436,20 +436,6 @@ class handler(requestsManager.asyncRequestHandler):
 			if midPPCalcException is not None:
 				raise ppCalcException(midPPCalcException)
 
-			# If there was no exception, update stats and build score submitted panel
-			# Get "before" stats for ranking panel (only if passed)
-			if s.passed:
-				# Get stats and rank
-				if UsingRelax:
-					oldUserStats = glob.userStatsCacheRX.get(userID, s.gameMode)
-					oldRank = userUtils.getGameRankRx(userID, s.gameMode)
-				elif UsingAutopilot:
-					oldUserStats = glob.userStatsCacheAP.get(userID, s.gameMode)
-					oldRank = userUtils.getGameRankAP(userID, s.gameMode)
-				else:
-					oldUserStats = glob.userStatsCache.get(userID, s.gameMode)
-					oldRank = userUtils.getGameRank(userID, s.gameMode)
-
 			# Always update users stats (total/ranked score, playcount, level, acc and pp)
 			# even if not passed
 			log.debug("Updating {}'s stats...".format(username))
@@ -470,16 +456,22 @@ class handler(requestsManager.asyncRequestHandler):
 			if s.passed:
 				# Get new stats
 				if UsingRelax:
+					oldUserStats = glob.userStatsCacheRX.get(userID, s.gameMode)
+					oldRank = userUtils.getGameRankRx(userID, s.gameMode)
 					newUserStats = userUtils.getUserStatsRx(userID, s.gameMode)
 					glob.userStatsCacheRX.update(userID, s.gameMode, newUserStats)
 					leaderboardHelperRelax.update(userID, newUserStats["pp"], s.gameMode)
 					maxCombo = userUtils.getMaxComboRX(userID, s.gameMode)
 				elif UsingAutopilot:
+					oldUserStats = glob.userStatsCacheAP.get(userID, s.gameMode)
+					oldRank = userUtils.getGameRankAP(userID, s.gameMode)
 					newUserStats = userUtils.getUserStatsAP(userID, s.gameMode)
 					glob.userStatsCacheAP.update(userID, s.gameMode, newUserStats)
 					leaderboardHelperAuto.update(userID, newUserStats["pp"], s.gameMode)
 					maxCombo = userUtils.getMaxComboAP(userID, s.gameMode)
 				else:
+					oldUserStats = glob.userStatsCache.get(userID, s.gameMode)
+					oldRank = userUtils.getGameRank(userID, s.gameMode)
 					newUserStats = userUtils.getUserStats(userID, s.gameMode)
 					glob.userStatsCache.update(userID, s.gameMode, newUserStats)
 					leaderboardHelper.update(userID, newUserStats["pp"], s.gameMode)
