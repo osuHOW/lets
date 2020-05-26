@@ -443,13 +443,16 @@ class handler(requestsManager.asyncRequestHandler):
 			if UsingRelax:
 				userUtils.incrementUserBeatmapPlaycountRX(userID, s.gameMode, beatmapInfo.beatmapID)
 				userUtils.updateStatsRx(userID, s)
+				userUtils.updateTotalHitsRX(score=s)
 			elif UsingAutopilot:
 				userUtils.incrementUserBeatmapPlaycountAP(userID, s.gameMode, beatmapInfo.beatmapID)
 				userUtils.updateStatsAP(userID, s)
+				userUtils.updateTotalHitsAP(score=s)
 			else:
 				userUtils.incrementUserBeatmapPlaycount(userID, s.gameMode, beatmapInfo.beatmapID)
 				userUtils.updateStats(userID, s)
-
+				userUtils.updateTotalHits(score=s)
+			
 			# Get "after" stats for ranking panel
 			# and to determine if we should update the leaderboard
 			# (only if we passed that song)
@@ -489,13 +492,6 @@ class handler(requestsManager.asyncRequestHandler):
 						leaderboardHelper.update(userID, newUserStats["pp"], s.gameMode)
 						leaderboardHelper.updateCountry(userID, newUserStats["pp"], s.gameMode)
 
-			# Update total hits
-			if UsingRelax:
-				userUtils.updateTotalHitsRX(score=s)
-			elif UsingAutopilot:
-				userUtils.updateTotalHitsAP(score=s)
-			else:
-				userUtils.updateTotalHits(score=s)
 			# TODO: Update max combo
 			
 			# Update latest activity
