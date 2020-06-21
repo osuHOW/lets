@@ -183,5 +183,3 @@ class oppai:
 			raise
 		finally:
 			log.debug("oppai-auto ~> Shutting down, pp = {}".format(self.pp))
-			
-# Aoba's horse food, loli flavours.
