@@ -56,7 +56,7 @@ Did you know?: You can configure more stuff in common/config.json after you run 
 ## tomejerry.py
 `tomejerry.py` is a tool that allows you to calculate pp for specific scores. It's extremely useful to do mass PP recalculations if you mess something up. It uses lets' config and packages, so make sure lets is installed and configured correctly before using it.
 
-Also there is `tomejerry-rx.py` that does the same thing but, and you guessed it, relax!
+Also there is `tomejerry-relax.py` and `tomejerry-ap` available for their respective gamemodes.
 ```
 usage: tomejerry.py [-h]
                     [-r | -z | -i ID | -m MODS | -g GAMEMODE | -u USERID | -b BEATMAPID | -fhd]
