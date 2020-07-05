@@ -435,16 +435,14 @@ class handler(requestsManager.asyncRequestHandler):
 			# even if not passed
 			log.debug("Updating {}'s stats...".format(username))
 			# Update personal beatmaps playcount
+			userUtils.incrementUserBeatmapPlaycount(userID, s.gameMode, beatmapInfo.beatmapID)
 			if UsingRelax:
-				userUtils.incrementUserBeatmapPlaycountRX(userID, s.gameMode, beatmapInfo.beatmapID)
 				userUtils.updateStatsRx(userID, s)
 				userUtils.updateTotalHitsRX(score=s)
 			elif UsingAutopilot:
-				userUtils.incrementUserBeatmapPlaycountAP(userID, s.gameMode, beatmapInfo.beatmapID)
 				userUtils.updateStatsAP(userID, s)
 				userUtils.updateTotalHitsAP(score=s)
 			else:
-				userUtils.incrementUserBeatmapPlaycount(userID, s.gameMode, beatmapInfo.beatmapID)
 				userUtils.updateStats(userID, s)
 				userUtils.updateTotalHits(score=s)
 			
