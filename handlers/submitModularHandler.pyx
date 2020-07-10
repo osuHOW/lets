@@ -61,14 +61,6 @@ class handler(requestsManager.asyncRequestHandler):
 			if glob.debug:
 				requestsManager.printArguments(self)
 
-			# Check arguments
-			if glob.conf.extra["lets"]["submit"]["ignore-x-flag"]:
-				if not requestsManager.checkArguments(self.request.arguments, ["score", "iv", "pass"]):
-					raise exceptions.invalidArgumentsException(MODULE_NAME)
-			else:
-				if not requestsManager.checkArguments(self.request.arguments, ["score", "iv", "pass", "x"]):
-					raise exceptions.invalidArgumentsException(MODULE_NAME)
-
 			# TODO: Maintenance check
 
 			# Get parameters and IP
@@ -97,8 +89,18 @@ class handler(requestsManager.asyncRequestHandler):
 			# Get right AES Key
 			if "osuver" in self.request.arguments:
 				aeskey = "osu!-scoreburgr---------{}".format(self.get_argument("osuver"))
+				OsuVer = self.get_argument("osuver")
 			else:
 				aeskey = "h89f2-890h2h89b34g-h80g134n90133"
+				OsuVer = "Really Old"
+
+			# Check arguments
+			if glob.conf.extra["lets"]["submit"]["ignore-x-flag"] or "RC" in OsuVer:
+				if not requestsManager.checkArguments(self.request.arguments, ["score", "iv", "pass"]):
+					raise exceptions.invalidArgumentsException(MODULE_NAME)
+			else:
+				if not requestsManager.checkArguments(self.request.arguments, ["score", "iv", "pass", "x"]):
+					raise exceptions.invalidArgumentsException(MODULE_NAME)
 
 			# Get score data
 			log.debug("Decrypting score data...")
