@@ -13,7 +13,7 @@ from common.web import requestsManager
 from constants import exceptions
 from helpers import osuapiHelper
 from objects import glob
-from pp import rippoppai, relaxoppai
+from pp import rippoppai, relaxoppai, autoppai
 from common.sentry import sentry
 
 MODULE_NAME = "api/pp"
@@ -115,6 +115,8 @@ class handler(requestsManager.asyncRequestHandler):
 						# Cached pp not found, calculate them
 						if gameMode == gameModes.STD and (modsEnum&mods.RELAX):
 							oppai = relaxoppai.oppai(bmap, mods=modsEnum, tillerino=True)
+						elif gameMode == gameModes.STD and (modsEnum&mods.RELAX2):
+							oppai = autoppai.oppai(bmap, mods=modsEnum, tillerino=True)
 						else:
 							oppai = rippoppai.oppai(bmap, mods=modsEnum, tillerino=True)
 						returnPP = oppai.pp
