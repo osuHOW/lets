@@ -134,7 +134,7 @@ class handler(requestsManager.asyncRequestHandler):
 					if gameMode == gameModes.STD and (modsEnum&mods.RELAX):
 						oppai = relaxoppai.oppai(bmap, mods=modsEnum, tillerino=True)
 					elif gameMode == gameModes.STD and (modsEnum&mods.RELAX2):
-						oppai = autooppai.oppai(bmap, mods=modsEnum, tillerino=True)
+						oppai = autoppai.oppai(bmap, mods=modsEnum, tillerino=True)
 					else:
 						oppai = rippoppai.oppai(bmap, mods=modsEnum, tillerino=True)
 					bmap.starsStd = oppai.stars
