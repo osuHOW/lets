@@ -629,10 +629,8 @@ class handler(requestsManager.asyncRequestHandler):
 					requests.get("{}/api/v1/fokabotMessage?{}".format(glob.conf.config["server"]["banchourl"], params))
 
 					#first places go brrr haha
-					glob.db.execute("DELETE FROM first_places WHERE beatmap_md5 = '{}' AND play_mode = {} AND relax = {}".format(
-						s.fileMd5,s.play_mode,rx_type
-					))
-					glob.db.execute("""
+					glob.db.execute(f"DELETE FROM first_places WHERE beatmap_md5 = '{s.fileMd5}' AND play_mode = {s.play_mode} AND relax = {rx_type}")
+					glob.db.execute(f"""
 							INSERT INTO first_places
 								(
 									score_id,
@@ -656,28 +654,26 @@ class handler(requestsManager.asyncRequestHandler):
 								)
 							VALUES
 								(
-									{},
-									{},
-									{},
-									{},
-									{},
-									{},
-									{},
-									{},
-									{},
-									{},
-									{},
-									{},
-									{},
-									{},
-									{},
-									{},
-									'{}',
-									{}
+									{s.scoreID},
+									{s.user_id},
+									{s.score},
+									{s.max_combo},
+									{s.full_combo},
+									{s.mods},
+									{s.c300},
+									{s.c100},
+									{s.c50},
+									{s.cMiss},
+									{s.playDateTime},
+									{s.mode},
+									{s.completed},
+									{s.accuracy},
+									{s.pp},
+									{s.play_time},
+									'{s.beatmap_md5}',
+									{rx_type}
 								)
-					""".format(
-						s.scoreID,s.user_id,s.score,s.max_combo,s.full_combo,s.mods,s.300_count,s.100_count,s.50_count,s.miss_count,s.playDateTime,s.mode,s.completed,s.accuracy,s.pp,s.play_time,s.beatmap_md5,rx_type
-					))
+					""")
 					# Let's send them to Discord too, because we cool :sunglasses:
 					
 					#around wheer it dies
