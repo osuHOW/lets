@@ -629,7 +629,9 @@ class handler(requestsManager.asyncRequestHandler):
 					requests.get("{}/api/v1/fokabotMessage?{}".format(glob.conf.config["server"]["banchourl"], params))
 
 					#first places go brrr haha
-					glob.db.execute(f"DELETE FROM first_places WHERE beatmap_md5 = '{s.fileMd5}' AND play_mode = {s.play_mode} AND relax = {rx_type}")
+					glob.db.execute("DELETE FROM first_places WHERE beatmap_md5 = '{}' AND play_mode = {} AND relax = {}".format(
+						s.fileMd5,s.play_mode,rx_type
+					))
 					glob.db.execute("""
 							INSERT INTO first_places
 								(
