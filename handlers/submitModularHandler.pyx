@@ -630,7 +630,7 @@ class handler(requestsManager.asyncRequestHandler):
 
 					#first places go brrr haha
 					glob.db.execute(f"DELETE FROM first_places WHERE beatmap_md5 = '{s.fileMd5}' AND mode = {s.gameMode} AND relax = {rx_type}")
-					glob.db.execute(f"""
+					query = f"""
 							INSERT INTO first_places
 								(
 									score_id,
@@ -669,11 +669,13 @@ class handler(requestsManager.asyncRequestHandler):
 									{s.completed},
 									{s.accuracy*100},
 									{s.pp},
-									{s.playTime},
+									{s.playTime if s.playTime is not None and not s.passed else s.fullPlayTime},
 									'{s.fileMd5}',
 									{rx_type}
 								)
-					""")
+					"""
+					log.debug(query)
+					glob.db.execute(query)
 					# Let's send them to Discord too, because we cool :sunglasses:
 					
 					#around wheer it dies
