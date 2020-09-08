@@ -670,7 +670,7 @@ class handler(requestsManager.asyncRequestHandler):
 									{s.accuracy*100},
 									{s.pp},
 									{s.playTime},
-									'{s.beatmap_md5}',
+									'{s.fileMd5}',
 									{rx_type}
 								)
 					""")
