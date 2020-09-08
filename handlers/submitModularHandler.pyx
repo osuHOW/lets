@@ -630,7 +630,7 @@ class handler(requestsManager.asyncRequestHandler):
 
 					#first places go brrr haha
 					glob.db.execute(f"DELETE FROM first_places WHERE beatmap_md5 = '{s.fileMd5}' AND play_mode = {s.play_mode} AND relax = {rx_type}")
-					glob.db.execute(f"""		INSERT INTO first_places			(				score_id,				user_id,				score,				max_combo,				full_combo,				mods,				300_count,				100_count,				50_count,				miss_count,				timestamp,				mode,				completed,				accuracy,				pp,				play_time,				beatmap_md5,				relax			)		VALUES			(				{s.scoreID},				{s.user_id},				{s.score},				{s.max_combo},				{s.full_combo},				{s.mods},				{s.300_count},				{s.100_count},				{s.50_count},				{s.miss_count},				{s.playDateTime},				{s.mode},				{s.completed},				{s.accuracy},				{s.pp},				{s.play_time},				{s.beatmap_md5},				{rx_type}			)""")
+					glob.db.execute(f"		INSERT INTO first_places			(				score_id,				user_id,				score,				max_combo,				full_combo,				mods,				300_count,				100_count,				50_count,				miss_count,				timestamp,				mode,				completed,				accuracy,				pp,				play_time,				beatmap_md5,				relax			)		VALUES			(				{s.scoreID},				{s.user_id},				{s.score},				{s.max_combo},				{s.full_combo},				{s.mods},				{s.300_count},				{s.100_count},				{s.50_count},				{s.miss_count},				{s.playDateTime},				{s.mode},				{s.completed},				{s.accuracy},				{s.pp},				{s.play_time},				{s.beatmap_md5},				{rx_type}			)")
 					# Let's send them to Discord too, because we cool :sunglasses:
 					
 					#around wheer it dies
