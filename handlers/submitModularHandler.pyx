@@ -657,8 +657,8 @@ class handler(requestsManager.asyncRequestHandler):
 									{s.scoreID},
 									{userID},
 									{s.score},
-									{s.max_combo},
-									{s.full_combo},
+									{s.maxCombo},
+									{s.fullCombo},
 									{s.mods},
 									{s.c300},
 									{s.c100},
@@ -667,9 +667,9 @@ class handler(requestsManager.asyncRequestHandler):
 									{s.playDateTime},
 									{s.gameMode},
 									{s.completed},
-									{s.accuracy},
+									{s.accuracy*100},
 									{s.pp},
-									{s.play_time},
+									{s.playTime},
 									'{s.beatmap_md5}',
 									{rx_type}
 								)
