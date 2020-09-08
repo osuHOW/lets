@@ -655,7 +655,7 @@ class handler(requestsManager.asyncRequestHandler):
 							VALUES
 								(
 									{s.scoreID},
-									{s.user_id},
+									{userID},
 									{s.score},
 									{s.max_combo},
 									{s.full_combo},
