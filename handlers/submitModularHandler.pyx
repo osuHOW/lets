@@ -96,10 +96,10 @@ class handler(requestsManager.asyncRequestHandler):
 
 			# Check arguments
 			if glob.conf.extra["lets"]["submit"]["ignore-x-flag"] or "RC" in OsuVer:
-				if not requestsManager.checkArguments(self.request.arguments, ["score", "iv", "pass"]):
+				if not requestsManager.checkArguments(self.request.arguments, ["score", "iv", "st", "pass"]):
 					raise exceptions.invalidArgumentsException(MODULE_NAME)
 			else:
-				if not requestsManager.checkArguments(self.request.arguments, ["score", "iv", "pass", "x"]):
+				if not requestsManager.checkArguments(self.request.arguments, ["score", "iv", "pass", "st", "x"]):
 					raise exceptions.invalidArgumentsException(MODULE_NAME)
 
 			# Get score data
