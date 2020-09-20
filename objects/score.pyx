@@ -13,6 +13,8 @@ from objects import glob
 from pp import rippoppai
 from pp import wifipiano2
 from pp import cicciobello
+from realistikcalc.calc import CalculatorOsu, CalculatorMania, CalculatorCatch, CalculatorTaiko
+from helpers import mapsHelper
 
 
 class score:
@@ -343,6 +345,7 @@ class score:
 			b = beatmap.beatmap(self.fileMd5, 0)
 
 		# Calculate pp
+		"""" # OLD RIPPLE CODE. BORING.
 		if b.rankedStatus in [rankedStatuses.RANKED, rankedStatuses.APPROVED, rankedStatuses.QUALIFIED] and b.rankedStatus != rankedStatuses.UNKNOWN \
 		and scoreUtils.isRankable(self.mods) and self.passed and self.gameMode in score.PP_CALCULATORS:
 			calculator = score.PP_CALCULATORS[self.gameMode](b, self)
@@ -353,7 +356,52 @@ class score:
 		elif not glob.conf.extra["lets"]["submit"]["loved-dont-give-pp"] and b.rankedStatus == rankedStatuses.LOVED \
 		and scoreUtils.isRankable(self.mods) and self.passed and self.gameMode in score.PP_CALCULATORS:
 			calculator = score.PP_CALCULATORS[self.gameMode](b, self)
-			self.pp = calculator.pp
+			self.pp = calculator.pp#
+		"""
+		if b.rankedStatus in (rankedStatuses.RANKED, rankedStatuses.APPROVED, rankedStatuses.QUALIFIED] and b.rankedStatus != rankedStatuses.UNKNOWN) \
+		and scoreUtils.isRankable(self.mods):
+			map_path = mapsHelper.cachedMapPath(b.beatmapID)
+			if self.gameMode == 0: # STD
+				calc = CalculatorOsu(
+					map_path,
+					self.mods,
+					self.accuracy,
+					self.maxCombo,
+					self.cMiss
+				)
+				self.pp = calc.pp
+			
+			elif self.gameMode == 1: # TAKIO
+				calc = CalculatorTaiko(
+					map_path,
+					self.accuracy,
+					self.maxCombo,
+					self.mods,
+					self.cMiss
+				)
+				self.pp = calc.pp
+			
+			elif self.gameMode == 2: # CATCH
+				calc = CalculatorCatch(
+					map_path,
+					self.accuracy,
+					self.maxCombo,
+					self.mods,
+					self.cMiss
+				)
+				self.pp = calc.pp
+			
+			elif self.gameMode == 3: # MAN NYA and I will regret this comment lmfao
+				calc = CalculatorMania(
+					map_path,
+					self.mods,
+					self.score
+				)
+				self.pp = calc.pp
+			
+			else:
+				log.warning("No matching gamemode! - Realistik's stupid code.")
+
 		else:
 			self.pp = 0
 
