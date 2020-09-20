@@ -369,7 +369,7 @@ class score:
 					self.maxCombo,
 					self.cMiss
 				)
-				self.pp = calc.pp
+				self.pp = calc.calc_osu().pp
 			
 			elif self.gameMode == 1: # TAKIO
 				calc = CalculatorTaiko(
@@ -379,7 +379,7 @@ class score:
 					self.mods,
 					self.cMiss
 				)
-				self.pp = calc.pp
+				self.pp = calc.calc_taiko().pp
 			
 			elif self.gameMode == 2: # CATCH
 				calc = CalculatorCatch(
@@ -389,7 +389,7 @@ class score:
 					self.mods,
 					self.cMiss
 				)
-				self.pp = calc.pp
+				self.pp = calc.calc_catch().pp
 			
 			elif self.gameMode == 3: # MAN NYA and I will regret this comment lmfao
 				calc = CalculatorMania(
@@ -397,7 +397,7 @@ class score:
 					self.mods,
 					self.score
 				)
-				self.pp = calc.pp
+				self.pp = calc.calc_mania().pp
 			
 			else:
 				log.warning("No matching gamemode! - Realistik's stupid code.")
