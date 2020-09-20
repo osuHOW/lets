@@ -358,7 +358,7 @@ class score:
 			calculator = score.PP_CALCULATORS[self.gameMode](b, self)
 			self.pp = calculator.pp#
 		"""
-		if b.rankedStatus in (rankedStatuses.RANKED, rankedStatuses.APPROVED, rankedStatuses.QUALIFIED) and b.rankedStatus != rankedStatuses.UNKNOWN) \
+		if b.rankedStatus in (rankedStatuses.RANKED, rankedStatuses.APPROVED, rankedStatuses.QUALIFIED) and b.rankedStatus != rankedStatuses.UNKNOWN \
 		and scoreUtils.isRankable(self.mods):
 			map_path = mapsHelper.cachedMapPath(b.beatmapID)
 			if self.gameMode == 0: # STD
