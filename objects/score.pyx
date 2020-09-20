@@ -345,7 +345,7 @@ class score:
 			b = beatmap.beatmap(self.fileMd5, 0)
 
 		# Calculate pp
-		"""" # OLD RIPPLE CODE. BORING.
+		# OLD RIPPLE CODE. BORING.
 		if b.rankedStatus in [rankedStatuses.RANKED, rankedStatuses.APPROVED, rankedStatuses.QUALIFIED] and b.rankedStatus != rankedStatuses.UNKNOWN \
 		and scoreUtils.isRankable(self.mods) and self.passed and self.gameMode in score.PP_CALCULATORS:
 			calculator = score.PP_CALCULATORS[self.gameMode](b, self)
@@ -402,6 +402,8 @@ class score:
 			
 			else:
 				log.warning("No matching gamemode! - Realistik's stupid code.")
+		
+		"""
 
 		else:
 			self.pp = 0
