@@ -361,6 +361,7 @@ class score:
 		if b.rankedStatus in (rankedStatuses.RANKED, rankedStatuses.APPROVED, rankedStatuses.QUALIFIED) and b.rankedStatus != rankedStatuses.UNKNOWN \
 		and scoreUtils.isRankable(self.mods):
 			map_path = mapsHelper.cachedMapPath(b.beatmapID)
+			mapsHelper.cacheMap(map_path, b)
 			if self.gameMode == 0: # STD
 				calc = CalculatorOsu(
 					map_path,
