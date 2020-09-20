@@ -366,7 +366,7 @@ class score:
 				calc = CalculatorOsu(
 					map_path,
 					self.mods,
-					self.accuracy,
+					self.accuracy*100,
 					self.maxCombo,
 					self.cMiss
 				)
@@ -375,7 +375,7 @@ class score:
 			elif self.gameMode == 1: # TAKIO
 				calc = CalculatorTaiko(
 					map_path,
-					self.accuracy,
+					self.accuracy*100,
 					self.maxCombo,
 					self.mods,
 					self.cMiss
@@ -385,7 +385,7 @@ class score:
 			elif self.gameMode == 2: # CATCH
 				calc = CalculatorCatch(
 					map_path,
-					self.accuracy,
+					self.accuracy*100,
 					self.maxCombo,
 					self.mods,
 					self.cMiss
