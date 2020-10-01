@@ -31,7 +31,7 @@ class scoreboard:
 		self.ppboard = 0
 		if glob.conf.extra["lets"]["submit"]["loved-dont-give-pp"] and beatmap.rankedStatus == 5:
 			self.ppboard = 0
-		elif userUtils.PPBoard(self.userID, self.relax) == 1:
+		elif userUtils.PPBoard(self.userID, self.relax):
 			self.ppboard = 1
 		else:
 			self.ppboard = 0
@@ -249,9 +249,10 @@ class scoreboard:
 			data += "\n"
 		else:
 			# Set personal best score rank
+			# This is the thingy we chang
 			self.setPersonalBestRank()	# sets self.personalBestRank with the huge query
 			self.scores[0].setRank(self.personalBestRank)
-			data += self.scores[0].getData(pp=self.ppboard)
+			data += self.scores[0].getDataRealistikTM(pp=self.ppboard, all_scores=self.totalScores)
 
 		# Output top 50 scores
 		for i in self.scores[1:]:

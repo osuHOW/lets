@@ -37,7 +37,7 @@ class score:
 		setData -- if True, set score data from db using scoreID. Optional.
 		"""
 		self.scoreID = 0
-		self.playerName = "nospe"
+		self.playerName = "Bruh"
 		self.score = 0
 		self.maxCombo = 0
 		self.c50 = 0
@@ -237,6 +237,26 @@ class score:
 		return "{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|1\n".format(
 			self.scoreID,
 			self.playerName,
+			int(self.pp) if pp else self.score,
+			self.maxCombo,
+			self.c50,
+			self.c100,
+			self.c300,
+			self.cMiss,
+			self.cKatu,
+			self.cGeki,
+			self.fullCombo,
+			self.mods,
+			self.playerUserID,
+			self.rank,
+			self.date
+		)
+	
+	def getData(self, pp=True, all_scores = 0):
+		"""Return score row relative to this score for getscores"""
+		return "{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|1\n".format(
+			self.scoreID,
+			f"of {all_scores}",
 			int(self.pp) if pp else self.score,
 			self.maxCombo,
 			self.c50,
