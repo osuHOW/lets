@@ -250,6 +250,26 @@ class score:
 			self.rank,
 			self.date
 		)
+	
+	def getDataRealistikTM(self, pp=True, all_scores = 0):
+		"""Return score row relative to this score for getscores"""
+		return "{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|1\n".format(
+			self.scoreID,
+			f"of {all_scores}",
+			int(self.pp) if pp else self.score,
+			self.maxCombo,
+			self.c50,
+			self.c100,
+			self.c300,
+			self.cMiss,
+			self.cKatu,
+			self.cGeki,
+			self.fullCombo,
+			self.mods,
+			self.playerUserID,
+			self.rank,
+			self.date
+		)
 
 	def setCompletedStatus(self):
 		"""
