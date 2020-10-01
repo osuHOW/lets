@@ -252,7 +252,7 @@ class score:
 			self.date
 		)
 	
-	def getData(self, pp=True, all_scores = 0):
+	def getDataRealistikTM(self, pp=True, all_scores = 0):
 		"""Return score row relative to this score for getscores"""
 		return "{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|1\n".format(
 			self.scoreID,
