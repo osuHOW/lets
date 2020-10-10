@@ -253,7 +253,7 @@ class score:
 		)
 	
 	def getDataRealistikTM(self, pp=True, all_scores = 0):
-		"""Return score row relative to this score for getscores"""
+		"""Return score row relative to this score for getscores specific to the own rank thing."""
 		return "{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|1\n".format(
 			self.scoreID,
 			f"of {all_scores}",

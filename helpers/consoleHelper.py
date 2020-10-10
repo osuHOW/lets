@@ -14,21 +14,16 @@ def printServerStartHeader(asciiArt):
 
 	if asciiArt:
 		DaColour = random.choice([bcolors.BLUE, bcolors.YELLOW, bcolors.PINK, bcolors.RED, bcolors.GREEN])
-		printColored(" (                 (     ", DaColour)
-		printColored(" )\\ )        *   ) )\\ )  ", DaColour)
-		printColored("(()/(  (   ` )  /((()/(  ", DaColour)
-		printColored(" /(_)) )\\   ( )(_))/(_)) ", DaColour)
-		printColored("(_))  ((_) (_(_())(_))   ", DaColour)
-		printColored("| |   | __||_   _|/ __|  ", DaColour)
-		printColored("| |__ | _|   | |  \\__ \\  ", DaColour)
-		printColored("|____||___|  |_|  |___/  \n", DaColour)
+		printColored(r""" __       ______   _________  ______      
+/_/\     /_____/\ /________/\/_____/\     
+\:\ \    \::::_\/_\__.::.__\/\::::_\/_    
+ \:\ \    \:\/___/\  \::\ \   \:\/___/\   
+  \:\ \____\::___\/_  \::\ \   \_::._\:\  
+   \:\/___/\\:\____/\  \::\ \    /____\:\ 
+    \_____\/ \_____\/   \__\/    \_____\/""", DaColour)
 
-	printColored("> Welcome to the Latest Essential Tatoe Server (RealistikOsu! ver)", bcolors.GREEN)
-	printColored("> Common submodule v{}".format(glob.COMMON_VERSION), bcolors.GREEN)
-	printColored("> Forked by RealistikOsu!", bcolors.GREEN)
-	printColored("> Made by the Ripple team", bcolors.GREEN)
-	printColored("> {}https://github.com/RealistikOsu/lets".format(bcolors.UNDERLINE), bcolors.GREEN)
-	printColored("> Press CTRL+C to exit\n", bcolors.GREEN)
+	printColored("# lets - The RealistikOsu! Score Server", bcolors.BLUE)
+	printColored("# This is a fork of the LETS score server created by the Ripple Team.", bcolors.BLUE)
 
 
 def printNoNl(string):
