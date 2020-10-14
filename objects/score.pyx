@@ -259,7 +259,7 @@ class score:
 			playername = self.playerName.split("]")[1][1:]
 		return "{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|1\n".format(
 			self.scoreID,
-			self.playerName.split("]")[1][1:], # remove the clan name b
+			playername, # remove the clan name b
 			int(self.pp) if pp else self.score,
 			self.maxCombo,
 			self.c50,
