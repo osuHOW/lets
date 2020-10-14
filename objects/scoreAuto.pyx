@@ -252,10 +252,10 @@ class score:
 		)
 	
 	def getDataRealistikTM(self, pp=True, all_scores = 0):
-		"""Return score row relative to this score for getscores"""
+		"""Return score row relative to this score for getscores specific to the own rank thing."""
 		return "{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|1\n".format(
 			self.scoreID,
-			f"of {all_scores}",
+			self.playerName.split("]")[1][1:], # remove the clan name b
 			int(self.pp) if pp else self.score,
 			self.maxCombo,
 			self.c50,
