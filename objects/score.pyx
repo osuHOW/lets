@@ -255,7 +255,7 @@ class score:
 	def getDataRealistikTM(self, pp=True, all_scores = 0):
 		"""Return score row relative to this score for getscores specific to the own rank thing."""
 		playername = self.playerName
-		if "[" in playerName: # They in a clan
+		if "[" in playername: # They in a clan
 			playername = self.playerName.split("]")[1][1:]
 		return "{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|1\n".format(
 			self.scoreID,
