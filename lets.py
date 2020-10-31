@@ -106,7 +106,7 @@ def make_app():
 		(r"/web/osu-addfavourite.php", emptyHandler.handler), # Add Favorite
 		(r"/web/osu-checktweets.php", emptyHandler.handler), # Do we need this?
 		(r"/web/osu-getfriends.php", emptyHandler.handler), # osu stop ddos lets
-		(r"/home/notifications/endpoint", emptyHandler.handler)
+		(r"/home/notifications/endpoint", emptyHandler.handler),
 
 		(r"/loadTest", loadTestHandler.handler),
 	], default_handler_class=defaultHandler.handler)
