@@ -10,7 +10,7 @@ import objects.glob
 class beatmap:
 	__slots__ = ("songName", "fileMD5", "rankedStatus", "rankedStatusFrozen", "beatmapID", "beatmapSetID", "offset",
 	             "rating", "starsStd", "starsTaiko", "starsCtb", "starsMania", "AR", "OD", "maxCombo", "hitLength",
-	             "bpm", "rankingDate", "playcount" ,"passcount", "refresh", "fileName")
+	             "bpm", "rankingDate", "playcount" ,"passcount", "refresh", "fileName", "mode")
 
 	def __init__(self, md5 = None, beatmapSetID = None, gameMode = 0, refresh=False, fileName=None):
 		"""
