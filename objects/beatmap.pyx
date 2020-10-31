@@ -47,6 +47,8 @@ class beatmap:
 		# Force refresh from osu api
 		self.refresh = refresh
 
+		self.mode = 0
+
 		if md5 is not None and beatmapSetID is not None:
 			self.setData(md5, beatmapSetID)
 
@@ -85,8 +87,8 @@ class beatmap:
 		objects.glob.db.execute(
 			"INSERT INTO `beatmaps` (`id`, `beatmap_id`, `beatmapset_id`, `beatmap_md5`, `song_name`, "
 			"`ar`, `od`, `difficulty_std`, `difficulty_taiko`, `difficulty_ctb`, `difficulty_mania`, "
-			"`max_combo`, `hit_length`, `bpm`, `ranked`, `latest_update`, `ranked_status_freezed`) "
-			"VALUES (NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (
+			"`max_combo`, `hit_length`, `bpm`, `ranked`, `latest_update`, `ranked_status_freezed`, `mode`) "
+			"VALUES (NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (
 		"""
 		params = [
 			self.beatmapID,
@@ -104,7 +106,8 @@ class beatmap:
 			self.bpm,
 			self.rankedStatus if frozen == 0 else 2,
 			int(time.time()),
-			frozen
+			frozen,
+			self.mode
 		#)
 		]
 		if self.fileName is not None:
@@ -113,8 +116,8 @@ class beatmap:
 			"INSERT INTO `beatmaps` (`id`, `beatmap_id`, `beatmapset_id`, `beatmap_md5`, `song_name`, "
 			"`ar`, `od`, `difficulty_std`, `difficulty_taiko`, `difficulty_ctb`, `difficulty_mania`, "
 			"`max_combo`, `hit_length`, `bpm`, `ranked`, "
-			"`latest_update`, `ranked_status_freezed`{extra_q}) "
-			"VALUES (NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s{extra_p})".format(
+			"`latest_update`, `ranked_status_freezed`, `mode`{extra_q}) "
+			"VALUES (NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s{extra_p})".format(
 				extra_q=", `file_name`" if self.fileName is not None else "",
 				extra_p=", %s" if self.fileName is not None else "",
 			), params
@@ -191,6 +194,8 @@ class beatmap:
 		# Ranking panel statistics
 		self.playcount = int(data["playcount"]) if "playcount" in data else 0
 		self.passcount = int(data["passcount"]) if "passcount" in data else 0
+		# Realistik's modifications
+		self.mode = data["mode"]
 
 	def setDataFromOsuApi(self, md5, beatmapSetID):
 		"""
@@ -280,6 +285,9 @@ class beatmap:
 			self.bpm = int(float(mainData["bpm"]))
 		else:
 			self.bpm = -1
+
+		# Realistik's stuff
+		self.mode = int(mainData.get("mode", -1))
 		return True
 
 	def setData(self, md5, beatmapSetID):
