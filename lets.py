@@ -61,7 +61,7 @@ import secret.achievements.utils
 
 def make_app():
 	return tornado.web.Application([
-		(r"/users", inGameRegistrationHandler.handler),
+		(r"/users", inGameRegistrationHandler.handler), 
 		(r"/web/bancho_connect.php", banchoConnectHandler.handler),
 		(r"/web/osu-osz2-getscores.php", getScoresHandler.handler),
 		(r"/web/osu-submit-modular.php", submitModularHandler.handler),
@@ -105,6 +105,7 @@ def make_app():
 		(r"/web/osu-markasread.php", emptyHandler.handler), # Mark As Read
 		(r"/web/osu-addfavourite.php", emptyHandler.handler), # Add Favorite
 		(r"/web/osu-checktweets.php", emptyHandler.handler), # Do we need this?
+		(r"/web/osu-getfriends.php", emptyHandler.handler), # osu stop ddos lets
 
 		(r"/loadTest", loadTestHandler.handler),
 	], default_handler_class=defaultHandler.handler)
@@ -156,13 +157,13 @@ if __name__ == "__main__":
 		except:
 			consoleHelper.printWarning()
 			consoleHelper.printColored("[!] Unable to load custom config at {}".format(glob.conf.config["custom"]["config"]), bcolors.RED)
-			consoleHelper.printColored("[!] Make sure you have the latest osu!thailand common submodule!", bcolors.RED)
+			consoleHelper.printColored("[!] Make sure you have the latest RealistikOsu specific common submodule!", bcolors.RED)
 			sys.exit()
 
 		# Check if running common module is usable
 		if glob.COMMON_VERSION == "Unknown":
 			consoleHelper.printWarning()
-			consoleHelper.printColored("[!] You do not seem to be using osu!thailand's common submodule... nothing will work...", bcolors.RED)
+			consoleHelper.printColored("[!] You do not seem to be using RealistikOsu specific common submodule... nothing will work...", bcolors.RED)
 			consoleHelper.printColored("[!] You can download or fork the submodule from {}https://github.com/osuthailand/common".format(bcolors.UNDERLINE), bcolors.RED)
 			sys.exit()
 		elif LooseVersion(glob.COMMON_VERSION_REQ) > LooseVersion(glob.COMMON_VERSION):
