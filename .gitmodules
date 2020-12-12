@@ -19,4 +19,4 @@
 	url = https://github.com/RealistikOsu/ap-pp.git
 [submodule "pp/oppai-rx"]
 	path = pp/oppai-rx
-	url = https://github.com/Adobeosu/oppai-rx
+	url = https://github.com/osuthailand/ainu-rx-calc/tree/034f947f5c00e772884b3f50df531b7a3c46f5f6
