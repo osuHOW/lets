@@ -13,8 +13,6 @@ from objects import glob
 from pp import rippoppai
 from pp import wifipiano2
 from pp import cicciobello
-from realistikcalc.calc import CalculatorOsu, CalculatorMania, CalculatorCatch, CalculatorTaiko
-from helpers import mapsHelper
 
 
 class score:
@@ -37,7 +35,7 @@ class score:
 		setData -- if True, set score data from db using scoreID. Optional.
 		"""
 		self.scoreID = 0
-		self.playerName = "Bruh"
+		self.playerName = "nospe"
 		self.score = 0
 		self.maxCombo = 0
 		self.c50 = 0
@@ -251,30 +249,6 @@ class score:
 			self.rank,
 			self.date
 		)
-	
-	def getDataRealistikTM(self, pp=True, all_scores = 0):
-		"""Return score row relative to this score for getscores specific to the own rank thing."""
-		playername = self.playerName
-		if "[" in playername: # They in a clan
-			playername = self.playerName.split("]")[1][1:]
-		return "{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|1\n".format(
-			self.scoreID,
-			playername, # remove the clan name b
-			int(self.pp) if pp else self.score,
-			self.maxCombo,
-			self.c50,
-			self.c100,
-			self.c300,
-			self.cMiss,
-			self.cKatu,
-			self.cGeki,
-			self.fullCombo,
-			self.mods,
-			self.playerUserID,
-			self.rank,
-			self.date
-		)
-
 
 	def setCompletedStatus(self, b = None):
 		"""
@@ -369,7 +343,6 @@ class score:
 			b = beatmap.beatmap(self.fileMd5, 0)
 
 		# Calculate pp
-		"""" # OLD RIPPLE CODE. BORING.
 		if b.rankedStatus in [rankedStatuses.RANKED, rankedStatuses.APPROVED, rankedStatuses.QUALIFIED] and b.rankedStatus != rankedStatuses.UNKNOWN \
 		and scoreUtils.isRankable(self.mods) and self.passed and self.gameMode in score.PP_CALCULATORS:
 			calculator = score.PP_CALCULATORS[self.gameMode](b, self)
@@ -380,53 +353,7 @@ class score:
 		elif not glob.conf.extra["lets"]["submit"]["loved-dont-give-pp"] and b.rankedStatus == rankedStatuses.LOVED \
 		and scoreUtils.isRankable(self.mods) and self.passed and self.gameMode in score.PP_CALCULATORS:
 			calculator = score.PP_CALCULATORS[self.gameMode](b, self)
-			self.pp = calculator.pp#
-		"""
-		if b.rankedStatus in (rankedStatuses.RANKED, rankedStatuses.APPROVED, rankedStatuses.QUALIFIED) and b.rankedStatus != rankedStatuses.UNKNOWN \
-		and scoreUtils.isRankable(self.mods):
-			map_path = mapsHelper.cachedMapPath(b.beatmapID)
-			mapsHelper.cacheMap(map_path, b)
-			if self.gameMode == 0: # STD
-				calc = CalculatorOsu(
-					map_path,
-					self.mods,
-					self.accuracy*100,
-					self.maxCombo,
-					self.cMiss
-				)
-				self.pp = calc.calc_osu().pp
-			
-			elif self.gameMode == 1: # TAKIO
-				calc = CalculatorTaiko(
-					map_path,
-					self.accuracy*100,
-					self.maxCombo,
-					self.mods,
-					self.cMiss
-				)
-				self.pp = calc.calc_taiko().pp
-			
-			elif self.gameMode == 2: # CATCH
-				calc = CalculatorCatch(
-					map_path,
-					self.accuracy*100,
-					self.maxCombo,
-					self.mods,
-					self.cMiss
-				)
-				self.pp = calc.calc_catch().pp
-			
-			elif self.gameMode == 3: # MAN NYA and I will regret this comment lmfao
-				calc = CalculatorMania(
-					map_path,
-					self.mods,
-					self.score
-				)
-				self.pp = calc.calc_mania().pp
-			
-			else:
-				log.warning("No matching gamemode! - Realistik's stupid code.")
-
+			self.pp = calculator.pp
 		else:
 			self.pp = 0
 

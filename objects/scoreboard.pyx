@@ -27,11 +27,10 @@ class scoreboard:
 		self.friends = friends
 		self.mods = mods
 		self.relax = 0
-		self.autopilot = 0
 		self.ppboard = 0
 		if glob.conf.extra["lets"]["submit"]["loved-dont-give-pp"] and beatmap.rankedStatus == 5:
 			self.ppboard = 0
-		elif userUtils.PPBoard(self.userID, self.relax):
+		elif userUtils.PPBoard(self.userID, self.relax) == 1:
 			self.ppboard = 1
 		else:
 			self.ppboard = 0
@@ -165,7 +164,7 @@ class scoreboard:
 				self.scores.append(s)
 				c+=1
 
-		# If we have more than 50 scores, run query to get scores count
+		'''# If we have more than 50 scores, run query to get scores count
 		if c >= 50:
 			# Count all scores on this map
 			select = "SELECT COUNT(*) AS count"
@@ -179,7 +178,7 @@ class scoreboard:
 			else:
 				self.totalScores = count["count"]
 		else:
-			self.totalScores = c-1
+			self.totalScores = c-1'''
 
 		# If personal best score was not in top 50, try to get it from cache
 		if personalBestScore is not None and self.personalBestRank < 1:
@@ -249,10 +248,9 @@ class scoreboard:
 			data += "\n"
 		else:
 			# Set personal best score rank
-			# This is the thingy we chang
 			self.setPersonalBestRank()	# sets self.personalBestRank with the huge query
 			self.scores[0].setRank(self.personalBestRank)
-			data += self.scores[0].getDataRealistikTM(pp=self.ppboard, all_scores=self.totalScores)
+			data += self.scores[0].getData(pp=self.ppboard)
 
 		# Output top 50 scores
 		for i in self.scores[1:]:

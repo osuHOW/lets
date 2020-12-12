@@ -50,6 +50,7 @@ class handler(requestsManager.asyncRequestHandler):
 	#@sentry.captureTornado
 	def asyncPost(self):
 		newCharts = self.request.uri == "/web/osu-submit-modular-selector.php"
+		
 		try:
 			# Resend the score in case of unhandled exceptions
 			keepSending = True
@@ -116,15 +117,15 @@ class handler(requestsManager.asyncRequestHandler):
 				raise exceptions.loginFailedException(MODULE_NAME, userID)
 				
 			 # Score submission lock check
-			lock_key = "lets:score_submission_lock:{}:{}:{}".format(userID, scoreData[0], int(scoreData[9]))
-			if glob.redis.get(lock_key) is not None:
+			#lock_key = "lets:score_submission_lock:{}:{}:{}".format(userID, scoreData[0], int(scoreData[9]))
+			#if glob.redis.get(lock_key) is not None:
 				# The same score score is being submitted and it's taking a lot
-				log.warning("Score submission blocked because there's a submission lock in place ({})".format(lock_key))
+				#log.warning("Score submission blocked because there's a submission lock in place ({})".format(lock_key))
 				return
  
 			# Set score submission lock
-			log.debug("Setting score submission lock {}".format(lock_key))
-			glob.redis.set(lock_key, "1", 120)
+			#log.debug("Setting score submission lock {}".format(lock_key))
+			#glob.redis.set(lock_key, "1", 120)
  
 				
 			# Bancho session/username-pass combo check
@@ -166,6 +167,7 @@ class handler(requestsManager.asyncRequestHandler):
 				rx_type = 0
 
 			# Create score object and set its data
+			keepSending = False
 			if UsingRelax:
 				log.info("[RELAX] {} has submitted a score on {}...".format(username, scoreData[0]))
 				s = scoreRelax.score()
@@ -303,8 +305,8 @@ class handler(requestsManager.asyncRequestHandler):
 				
 			# Remove lock as we have the score in the database at this point
 			# and we can perform duplicates check through MySQL
-			log.debug("Resetting score lock key {}".format(lock_key))
-			glob.redis.delete(lock_key)
+			#log.debug("Resetting score lock key {}".format(lock_key))
+			#glob.redis.delete(lock_key)
 			
 			# Client anti-cheat flags
 			if not restricted and glob.conf.extra["mode"]["anticheat"]:
