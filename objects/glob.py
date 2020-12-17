@@ -1,7 +1,9 @@
 import personalBestCache
 import personalBestCacheRX
+import personalBestCacheAP
 import userStatsCache
 import userStatsCacheRX
+import userStatsCacheAP
 from common.ddog import datadogClient
 from common.files import fileBuffer, fileLocks
 from common.web import schiavo
@@ -28,8 +30,10 @@ sentry = False
 fLocks = fileLocks.fileLocks()
 userStatsCache = userStatsCache.userStatsCache()
 userStatsCacheRX = userStatsCacheRX.userStatsCacheRX()
+userStatsCacheAP = userStatsCacheAP.userStatsCacheAP()
 personalBestCache = personalBestCache.personalBestCache()
 personalBestCacheRX = personalBestCacheRX.personalBestCacheRX()
+personalBestCacheAP = personalBestCacheAP.personalBestCacheAP()
 fileBuffers = fileBuffer.buffersList()
 dog = datadogClient.datadogClient()
 schiavo = schiavo.schiavo()

@@ -19,4 +19,4 @@
 	url = https://github.com/RealistikOsu/ap-pp.git
 [submodule "pp/oppai-rx"]
 	path = pp/oppai-rx
-	url = https://github.com/osuthailand/ainu-rx-calc/
+	url = https://github.com/light-ripple/akatsuki-pp-relax.git
