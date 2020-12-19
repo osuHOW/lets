@@ -65,7 +65,7 @@ class handler(requestsManager.asyncRequestHandler):
 			log.info("New screenshot ({})".format(screenshotID))
 
 			# Return screenshot link
-			self.write("{}/ss/{}.jpg".format(glob.conf.config["server"]["serverurl"], screenshotID))
+			self.write("{}/ss/{}.jpg".format(glob.conf.config["server"]["publiclets"], screenshotID))
 		except exceptions.need2FAException:
 			pass
 		except exceptions.invalidArgumentsException:

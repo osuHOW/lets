@@ -61,6 +61,7 @@ class config:
             self.config.get("server", "debug")
             self.config.get("server", "beatmapcacheexpire")
             self.config.get("server", "serverurl")
+            self.config.get("server", "publiclets")
             self.config.get("server", "banchourl")
             self.config.get("server", "threads")
             self.config.get("server", "apikey")

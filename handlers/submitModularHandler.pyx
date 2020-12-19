@@ -96,8 +96,9 @@ class handler(requestsManager.asyncRequestHandler):
 
 			# Check arguments
 			if glob.conf.extra["lets"]["submit"]["ignore-x-flag"] or "RC" in OsuVer:
-				if not requestsManager.checkArguments(self.request.arguments, ["score", "iv", "st", "pass"]):
+				if not requestsManager.checkArguments(self.request.arguments, ["score", "iv", "pass"]):
 					raise exceptions.invalidArgumentsException(MODULE_NAME)
+					
 			else:
 				if not requestsManager.checkArguments(self.request.arguments, ["score", "iv", "pass", "st", "x"]):
 					raise exceptions.invalidArgumentsException(MODULE_NAME)
@@ -677,49 +678,7 @@ class handler(requestsManager.asyncRequestHandler):
 					log.debug(query)
 					glob.db.execute(query)
 					# Let's send them to Discord too, because we cool :sunglasses:
-					
-					#around wheer it dies
-					if glob.conf.config["discord"]["enable"]:
-						# First, let's check what mod does the play have
-						ScoreMods = ""
-						if s.mods == 0:
-							ScoreMods += "NM"
-						if s.mods & mods.NOFAIL > 0:
-							ScoreMods += "NF"
-						if s.mods & mods.EASY > 0:
-							ScoreMods += "EZ"
-						if s.mods & mods.HIDDEN > 0:
-							ScoreMods += "HD"
-						if s.mods & mods.HARDROCK > 0:
-							ScoreMods += "HR"
-						if s.mods & mods.DOUBLETIME > 0:
-							ScoreMods += "DT"
-						if s.mods & mods.HALFTIME > 0:
-							ScoreMods += "HT"
-						if s.mods & mods.FLASHLIGHT > 0:
-							ScoreMods += "FL"
-						if s.mods & mods.SPUNOUT > 0:
-							ScoreMods += "SO"
-						if s.mods & mods.TOUCHSCREEN > 0:
-							ScoreMods += "TD"
-						if s.mods & mods.RELAX > 0:
-							ScoreMods += "RX"
-						if s.mods & mods.RELAX2 > 0:
-							ScoreMods += "AP"
-						# Second, get the webhook link from config
-
-						url = glob.conf.config["discord"]["score"]
-
-						# Then post them!
-						webhook = Webhook(url, color=0xadd8e6, footer="This score is submitted on RealistikOsu!")
-						webhook.set_author(name=username.encode().decode("ASCII", "ignore"), icon='https://a.ussr.pl/{}'.format(userID))
-						webhook.set_title(title=f"New score by {username}!")
-						webhook.set_desc("[{}] Achieved #1 on mode **{}**, {} +{}!".format(DAGAyMode, gameModes.getGamemodeFull(s.gameMode), beatmapInfo.songName.encode().decode("ASCII", "ignore"), ScoreMods))
-						webhook.add_field(name='Total: {}pp'.format(float("{0:.2f}".format(s.pp))), value='Gained: +{}pp'.format(float("{0:.2f}".format(ppGained))))
-						webhook.add_field(name='Actual rank: {}'.format(rankInfo["currentRank"]), value='[Download Link](https://osu.gatari.pw/d/{})'.format(beatmapInfo.beatmapSetID))
-						webhook.add_field(name='Played by: {}'.format(username.encode().decode("ASCII", "ignore")), value="[Go to user's profile](https://ussr.pl/{}u/{})".format(ProfAppend, userID))
-						webhook.set_image('https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(beatmapInfo.beatmapSetID))
-						webhook.post()
+                    #actually lets not lol
 
 				# Write message to client
 				self.write(output)
