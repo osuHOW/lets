@@ -3,7 +3,7 @@
 	url = https://github.com/RealistikOsu/common.git
 [submodule "secret"]
 	path = secret
-	url = https://github.com/osuHOW/secret/tree/master
+	url = https://github.com/osuHOW/secret/
 [submodule "pp/oppai-ng"]
 	path = pp/oppai-ng
 	url = https://github.com/Francesco149/oppai-ng.git
