@@ -301,7 +301,6 @@ class handler(requestsManager.asyncRequestHandler):
 			
 			# Save score in db
 			s.saveScoreInDB()
-				
 			# Remove lock as we have the score in the database at this point
 			# and we can perform duplicates check through MySQL
 			log.debug("Resetting score lock key {}".format(lock_key))
@@ -373,8 +372,7 @@ class handler(requestsManager.asyncRequestHandler):
 				return
 
 			# NOTE: Process logging was removed from the client starting from 20180322
-			if s.completed == 3 and "pl" in self.request.arguments:
-				butterCake.bake(self, s)
+			butterCake.bake(self, s)
 				
 			# Save replay for all passed scores
 			# Make sure the score has an id as well (duplicated?, query error?)

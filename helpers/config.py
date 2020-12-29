@@ -126,6 +126,7 @@ class config:
         self.config.set("server", "beatmapcacheexpire", "86400")
         self.config.set("server", "serverurl", "http://127.0.0.1:5002")
         self.config.set("server", "banchourl", "http://127.0.0.1:5001")
+        self.config.set("server", "publiclets", "http://127.0.0.1")
         self.config.set("server", "threads", "16")
         self.config.set("server", "apikey", "changeme")
         self.config.set("server", "replayspath", ".data/replays")

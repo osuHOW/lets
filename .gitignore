@@ -2,6 +2,7 @@
 **/build
 config.ini
 .data
+run.sh
 runserver.bat
 .idea
 common_copied
@@ -9,5 +10,5 @@ common_refractor
 *.c
 *.so
 *.log
-.vs
+
 realistikcalc/ # Haha no calc for you
