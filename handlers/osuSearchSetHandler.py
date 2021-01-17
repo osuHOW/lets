@@ -38,7 +38,7 @@ class handler(requestsManager.asyncRequestHandler):
 			for key, _ in self.request.arguments.items():
 				args[key] = self.get_argument(key)
 
-			response = requests.get("https://bm.cookiezi.tk/web/osu-search-set.php?{}".format(urlencode(args)))
+			response = requests.get("http://cookiezi.tk/web/osu-search-set.php?{}".format(urlencode(args)))
 			self.write(response.text)
 		except Exception as e:
 			log.error("search failed: {}".format(e))

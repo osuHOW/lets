@@ -55,3 +55,11 @@ class scoreNotFoundError(Exception):
 class ppCalcException(Exception):
 	def __init__(self, exception):
 		self.exception = exception
+
+class checkSumNotPassed(Exception):
+	def __init__(self, who, map, checksum, additional_notification):
+		self.who = who
+		self.map = map
+		self.checksum = checksum
+		self.additional_notification = additional_notification
+		log.warning(f"{who} not passed checksum on {map} with checksum {checksum}: {additional_notification}")

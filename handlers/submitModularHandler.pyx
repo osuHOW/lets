@@ -61,6 +61,11 @@ class handler(requestsManager.asyncRequestHandler):
 			if glob.debug:
 				requestsManager.printArguments(self)
 
+			if not requestsManager.checkArguments(self.request.arguments, ["score", "iv", "pass", "x", "s", "st", "osuver"]):
+				old_osu = True
+				if not requestsManager.checkArguments(self.request.arguments, ["score", "iv", "pass"]):
+					raise exceptions.invalidArgumentsException(MODULE_NAME)
+
 			# TODO: Maintenance check
 
 			# Get parameters and IP
@@ -71,7 +76,8 @@ class handler(requestsManager.asyncRequestHandler):
 			if glob.conf.extra["lets"]["submit"]["ignore-x-flag"]:
 				quit_ = 0
 			else:
-				quit_ = self.get_argument("x") == "1"
+				if old_osu != True:
+					quit_ = self.get_argument("x") == "1"
 			try:
 				failTime = max(0, int(self.get_argument("ft", 0)))
 			except ValueError:
@@ -93,15 +99,6 @@ class handler(requestsManager.asyncRequestHandler):
 			else:
 				aeskey = "h89f2-890h2h89b34g-h80g134n90133"
 				OsuVer = "Really Old"
-
-			# Check arguments
-			if glob.conf.extra["lets"]["submit"]["ignore-x-flag"] or "RC" in OsuVer:
-				if not requestsManager.checkArguments(self.request.arguments, ["score", "iv", "pass"]):
-					raise exceptions.invalidArgumentsException(MODULE_NAME)
-					
-			else:
-				if not requestsManager.checkArguments(self.request.arguments, ["score", "iv", "pass", "st", "x"]):
-					raise exceptions.invalidArgumentsException(MODULE_NAME)
 
 			# Get score data
 			log.debug("Decrypting score data...")
@@ -192,15 +189,16 @@ class handler(requestsManager.asyncRequestHandler):
 			beatmapInfo = beatmap.beatmap()
 			beatmapInfo.setDataFromDB(s.fileMd5)
 
+			# Check if the ranked status is allowed
+			if beatmapInfo.rankedStatus not in glob.conf.extra["_allowed_beatmap_rank"]:
+				log.debug("Beatmap's rankstatus is not allowed to be submitted. Score submission aborted.")
+				self.write("error: no")
+				return
+
 			# Make sure the beatmap is submitted and updated
 			#if beatmapInfo.rankedStatus == rankedStatuses.NOT_SUBMITTED or beatmapInfo.rankedStatus == rankedStatuses.NEED_UPDATE or beatmapInfo.rankedStatus == rankedStatuses.UNKNOWN:
 			#	log.debug("Beatmap is not submitted/outdated/unknown. Score submission aborted.")
 			#	return
-
-			# Check if the ranked status is allowed
-			if beatmapInfo.rankedStatus not in glob.conf.extra["_allowed_beatmap_rank"]:
-				log.debug("Beatmap's rankstatus is not allowed to be submitted. Score submission aborted.")
-				return
 
 			# Set play time and full play time
 			s.fullPlayTime = beatmapInfo.hitLength
@@ -301,6 +299,7 @@ class handler(requestsManager.asyncRequestHandler):
 			
 			# Save score in db
 			s.saveScoreInDB()
+				
 			# Remove lock as we have the score in the database at this point
 			# and we can perform duplicates check through MySQL
 			log.debug("Resetting score lock key {}".format(lock_key))
@@ -316,8 +315,8 @@ class handler(requestsManager.asyncRequestHandler):
 						if glob.conf.config["discord"]["enable"]:
 							webhook = Webhook(glob.conf.config["discord"]["ahook"],
 											  color=0xadd836,
-											  footer="I SPOT A THOT. [ Client AC ]")
-							webhook.set_title(title=f"Caught some cheater {username} ({userID})")
+											  footer="[ Client AC ]")
+							webhook.set_title(title=f"Caught cheater {username} ({userID})")
 							webhook.set_desc(f'This body caught with flag {haxFlags}\nIn enuming: {hack}')
 							webhook.post()
 
@@ -372,7 +371,8 @@ class handler(requestsManager.asyncRequestHandler):
 				return
 
 			# NOTE: Process logging was removed from the client starting from 20180322
-			butterCake.bake(self, s)
+			if s.completed == 3:
+				butterCake.bake(self, s)
 				
 			# Save replay for all passed scores
 			# Make sure the score has an id as well (duplicated?, query error?)
@@ -675,8 +675,6 @@ class handler(requestsManager.asyncRequestHandler):
 					"""
 					log.debug(query)
 					glob.db.execute(query)
-					# Let's send them to Discord too, because we cool :sunglasses:
-                    #actually lets not lol
 
 				# Write message to client
 				self.write(output)
@@ -731,4 +729,5 @@ class handler(requestsManager.asyncRequestHandler):
 			# because the client will send the score again after some time.
 			if keepSending:
 				self.set_status(408)
+				log.warning("Score Submission Failed.")
 

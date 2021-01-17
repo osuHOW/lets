@@ -377,3 +377,4 @@ class score:
 			self.pp = calculator.pp
 		else:
 			self.pp = 0
+

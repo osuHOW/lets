@@ -27,7 +27,7 @@ class handler(requestsManager.asyncRequestHandler):
 	@tornado.gen.engine
 	def asyncPost(self):
 		try:
-			return self.write("Register via ussr.pl")
+			return self.write("Please do not use ingame registration. Register at osuhow.tk instead.")
 			"""
 			if not requestsManager.checkArguments(self.request.arguments, ["user[username]", "user[user_email]", "user[password]", "check"]):
 				return self.write("what are you doing here?")

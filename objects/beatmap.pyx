@@ -391,3 +391,4 @@ def incrementPlaycount(md5, passed):
 		f"WHERE beatmap_md5 = %s LIMIT 1",
 		[md5]
 	)
+

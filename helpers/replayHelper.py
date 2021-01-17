@@ -23,8 +23,6 @@ def buildFullReplay(scoreID=None, scoreData=None, rawReplay=None):
     if rawReplay is None:
         # Make sure raw replay exists
         fileName = "{}/replay_{}.osr".format(glob.conf.config["server"]["replayspath"], scoreID)
-        if not os.path.isfile(fileName):
-            raise FileNotFoundError()
 
         # Read raw replay
         with open(fileName, "rb") as f:

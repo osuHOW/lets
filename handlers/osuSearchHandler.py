@@ -57,7 +57,7 @@ class handler(requestsManager.asyncRequestHandler):
 			# Get data from cheesegull API
 			log.info("{} has requested osu!direct search: {}".format(username, query if query != "" else "index"))
 
-			response = requests.get("https://bm.cookiezi.tk/web/osu-search.php?{}".format(urlencode(args)))
+			response = requests.get("http://cookiezi.tk/web/osu-search.php?{}".format(urlencode(args)))
 			self.write(response.text)
 		except Exception as e:
 			log.error("search failed: {}".format(e))

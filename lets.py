@@ -88,8 +88,8 @@ def make_app():
 		(r"/web/replays_auto/(.*)", getFullReplayHandlerAuto.handler),
 		(r"/web/errorlogs/(.*)", getFullErrorHandler.handler),
 
-		(r"/p/verify", redirectHandler.handler, dict(destination="https://ussr.pl/")),
-		(r"/u/(.*)", redirectHandler.handler, dict(destination="https://ussr.pl/u/{}")),
+		(r"/p/verify", redirectHandler.handler, dict(destination="https://osuhow.tk/")),
+		(r"/u/(.*)", redirectHandler.handler, dict(destination="https://osuhow.tk/u/{}")),
 
 		(r"/api/v1/status", apiStatusHandler.handler),
 		(r"/api/v1/pp", apiPPHandler.handler),
@@ -106,6 +106,7 @@ def make_app():
 		(r"/web/osu-addfavourite.php", emptyHandler.handler), # Add Favorite
 		(r"/web/osu-checktweets.php", emptyHandler.handler), # Do we need this?
 		(r"/web/osu-getfriends.php", emptyHandler.handler), # osu stop ddos lets
+		(r"/web/osu-getbeatmapinfo.php", emptyHandler.handler),
 		(r"/home/notifications/endpoint", emptyHandler.handler),
 
 		(r"/loadTest", loadTestHandler.handler),
